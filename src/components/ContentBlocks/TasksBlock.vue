@@ -1,11 +1,13 @@
 <script setup lang="ts">
 
-import {nextTick, onUnmounted, ref} from "vue";
+import {computed, nextTick, onUnmounted, ref} from "vue";
 
 const isMenuOpen = ref(false);
 const buttonRef = ref<HTMLElement | null>(null)
 const menuRef = ref<HTMLElement | null>(null)
 
+//Обновляем позицию меню добавления квеста,
+//чтобы обеспечить переносимость при прокрутке и изменении размера экрана
 const updatePosition = async () => {
   if (isMenuOpen.value && buttonRef.value && menuRef.value) {
     await nextTick() // Ждём, если нужно
@@ -35,30 +37,101 @@ onUnmounted(() => {
   window.removeEventListener('resize', updatePosition)
 })
 
+//Интерфейс для квеста
 interface Quest {
   id: number,
   type: string,
   label: string
 }
 
+const QuestTypes = Object.freeze({
+    MAIN: 'main',
+    SIDE: 'side'
+  }
+)
+
 let nextID = 1
-
+//Массив квестов
 const quests = ref<Quest[]>([])
+const mainQuests = computed<Quest[]>(() => {
+  return quests.value.filter(quest => quest.type === QuestTypes.MAIN);
+});
+const sideQuests = computed<Quest[]>(() => {
+  return quests.value.filter(quest => quest.type === QuestTypes.SIDE);
+});
 
-const addMainQuest = () => {
-  quests.value.push({
+
+function makeQuest(type: string) {
+  return {
+    label: 'Безымянный квест' + nextID,
     id: nextID++,
-    type: 'main',
-    label: 'Безымянный квест',
-  })
-
-  isMenuOpen.value = false;
+    type,
+  }
 }
 
+//Добавляет новый главный квест в массив квестов.
+//Вставку осуществляет перед первым сайд-квестом, либо в конце массива, если
+//сайд-квестов нет.
+//Закрывает меню добавления.
+const addMainQuest = () => {
+  //Ищем первый элемент с типом "side"
+  //Гарантируется, что мы будем хранить сначала главные квесты, а потом сайд-квесты
+  let result = quests.value.findIndex(quest => quest.type === QuestTypes.SIDE)
+  if (result == -1)
+    quests.value.push(makeQuest(QuestTypes.MAIN))
+  else
+    quests.value.splice(result, 0, makeQuest(QuestTypes.MAIN))
+
+  isMenuOpen.value = false
+  isMainQuestsBtnVisible.value = true
+}
+
+const addSideQuest = () => {
+  quests.value.push(makeQuest(QuestTypes.SIDE))
+  isMenuOpen.value = false
+  isSideQuestsBtnVisible.value = true
+}
+
+//Удаляет квест из массива.
+//Пришлось делать функцию немного сложной
+//Что ж, я только учусь
+// (олень)
 const removeQuest = (index: number) => {
+  let type = quests.value[index]?.type
   quests.value.splice(index, 1);
+
+  if (quests.value.length == 0) {
+    isMainQuestsBtnVisible.value = false
+    isSideQuestsBtnVisible.value = false
+  } else {
+    if (type == QuestTypes.MAIN)
+      isMainQuestsExists()
+    else if (type == QuestTypes.SIDE)
+      isSideQuestsExists()
+  }
 }
 
+function isMainQuestsExists() {
+  if (quests.value.at(0).type != QuestTypes.MAIN)
+    isMainQuestsBtnVisible.value = false
+}
+
+function isSideQuestsExists() {
+  if (quests.value.at(-1).type != QuestTypes.SIDE)
+    isSideQuestsBtnVisible.value = false
+}
+
+const isMainQuestsBtnVisible = ref(false);
+const isSideQuestsBtnVisible = ref(false);
+
+const isMainQuestsListOpen = ref(true);
+const toggleMainQuests = () => {
+  isMainQuestsListOpen.value = !isMainQuestsListOpen.value
+}
+const isSideQuestsListOpen = ref(true);
+const toggleSideQuests = () => {
+  isSideQuestsListOpen.value = !isSideQuestsListOpen.value
+}
 </script>
 
 <template>
@@ -77,6 +150,7 @@ const removeQuest = (index: number) => {
       </button>
     </div>
 
+    <!--    v-show для открытия меню -->
     <div id="menu"
          v-show="isMenuOpen"
          ref="menuRef"
@@ -92,18 +166,34 @@ const removeQuest = (index: number) => {
       >
         Основной квест
       </button>
-      <button class="add-button" style="color: #008000;" id="sub-quest-button">Побочный квест
+
+      <button
+        class="add-button"
+        style="color: #008000"
+        id="sub-quest-button"
+        @click="addSideQuest"
+      >
+        Побочный квест
       </button>
     </div>
 
     <div class="quests-container">
+      <button
+        class="default-button"
+        v-if="isMainQuestsBtnVisible"
+        @click="toggleMainQuests"
+      >
+        Основные квесты
+      </button>
+
       <div
-        v-for="(quest, index) in quests"
+        v-for="(quest, index) in mainQuests"
         :key="quest.id"
         class="quest"
+        v-show="isMainQuestsListOpen"
       >
         <label
-          :for="'quest-button-' + index"
+          :for="`quest-button` + index"
           style="font-size: 32px; margin-bottom: 50px; cursor: text"
           contenteditable="true"
         >
@@ -126,8 +216,48 @@ const removeQuest = (index: number) => {
             Удалить
           </button>
         </div>
-
       </div>
+
+      <button
+        class="default-button"
+        v-if="isSideQuestsBtnVisible"
+        @click="toggleSideQuests"
+      >
+        Побочные квесты
+      </button>
+
+      <div
+        v-for="(quest, index) in sideQuests"
+        :key="quest.id"
+        class="quest"
+        v-show="isSideQuestsListOpen"
+      >
+        <label
+          :for="`quest-button` + index"
+          style="font-size: 32px; margin-bottom: 50px; cursor: text"
+          contenteditable="true"
+        >
+          {{ quest.label }}
+        </label>
+
+        <div class="row">
+          <button
+            class="content-button"
+            :id="'quest-button' + index"
+            style="margin-right: 50px"
+          >
+            Добавить подзадачу
+          </button>
+
+          <button
+            class="content-button"
+            @click="removeQuest(index + mainQuests.length)"
+          >
+            Удалить
+          </button>
+        </div>
+      </div>
+
     </div>
 
   </div>
