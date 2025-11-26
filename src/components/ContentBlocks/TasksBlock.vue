@@ -1,6 +1,9 @@
 <script setup lang="ts">
 
 import {computed, nextTick, onUnmounted, ref} from "vue";
+import QuestsBlock from "../Advanced/QuestsBlock.vue";
+import QuestsList from "../Advanced/QuestsList.vue";
+//import QuestsList from "@/components/Advanced/QuestsList.vue";
 
 const isMenuOpen = ref(false);
 const buttonRef = ref<HTMLElement | null>(null)
@@ -21,7 +24,8 @@ const toggleMenu = async () => {
   isMenuOpen.value = !isMenuOpen.value
   if (isMenuOpen.value) {
     await nextTick()
-    await updatePosition() // Первоначальный расчёт
+    // Первоначальный расчёт
+    await updatePosition()
     // Добавляем слушатели
     window.addEventListener('scroll', updatePosition)
     window.addEventListener('resize', updatePosition)
@@ -38,7 +42,7 @@ onUnmounted(() => {
 })
 
 //Интерфейс для квеста
-interface Quest {
+export interface Quest {
   id: number,
   type: string,
   label: string
@@ -83,47 +87,19 @@ const addMainQuest = () => {
     quests.value.splice(result, 0, makeQuest(QuestTypes.MAIN))
 
   isMenuOpen.value = false
-  isMainQuestsBtnVisible.value = true
 }
 
 const addSideQuest = () => {
   quests.value.push(makeQuest(QuestTypes.SIDE))
   isMenuOpen.value = false
-  isSideQuestsBtnVisible.value = true
 }
 
 //Удаляет квест из массива.
-//Пришлось делать функцию немного сложной
-//Что ж, я только учусь
-// (олень)
 const removeQuest = (index: number) => {
-  let type = quests.value[index]?.type
   quests.value.splice(index, 1);
-
-  if (quests.value.length == 0) {
-    isMainQuestsBtnVisible.value = false
-    isSideQuestsBtnVisible.value = false
-  } else {
-    if (type == QuestTypes.MAIN)
-      isMainQuestsExists()
-    else if (type == QuestTypes.SIDE)
-      isSideQuestsExists()
-  }
 }
 
-function isMainQuestsExists() {
-  if (quests.value.at(0).type != QuestTypes.MAIN)
-    isMainQuestsBtnVisible.value = false
-}
-
-function isSideQuestsExists() {
-  if (quests.value.at(-1).type != QuestTypes.SIDE)
-    isSideQuestsBtnVisible.value = false
-}
-
-const isMainQuestsBtnVisible = ref(false);
-const isSideQuestsBtnVisible = ref(false);
-
+//Для сворачивания/разворачивания блоков
 const isMainQuestsListOpen = ref(true);
 const toggleMainQuests = () => {
   isMainQuestsListOpen.value = !isMainQuestsListOpen.value
@@ -178,86 +154,61 @@ const toggleSideQuests = () => {
     </div>
 
     <div class="quests-container">
-      <button
-        class="default-button"
-        v-if="isMainQuestsBtnVisible"
-        @click="toggleMainQuests"
-      >
-        Основные квесты
-      </button>
+<!--            <div id="main-quests">
+              <button
+                class="default-button"
+                v-if="mainQuests.length"
+                @click="toggleMainQuests"
+              >
+                Основные квесты
+              </button>
 
-      <div
-        v-for="(quest, index) in mainQuests"
-        :key="quest.id"
-        class="quest"
-        v-show="isMainQuestsListOpen"
-      >
-        <label
-          :for="`quest-button` + index"
-          style="font-size: 32px; margin-bottom: 50px; cursor: text"
-          contenteditable="true"
+              <QuestsList
+                v-for="(quest, index) in mainQuests"
+                :key="quest.id"
+                :index="index"
+                :quest="quest"
+                @removeQuest="removeQuest"
+                v-show="isMainQuestsListOpen"
+              ></QuestsList>
+            </div>-->
+      <QuestsBlock
+        :is-list-open="isMainQuestsListOpen"
+        :button_text="'Основные квесты'"
+        :quests_array="mainQuests"
+        :index-adjustment="0"
+        @removeQuest="removeQuest"
+        @toggleList="toggleMainQuests"
+      ></QuestsBlock>
+
+      <QuestsBlock
+        :is-list-open="isSideQuestsListOpen"
+        :button_text="'Побочные квесты'"
+        :quests_array="sideQuests"
+        :index-adjustment="mainQuests.length"
+        @removeQuest="removeQuest"
+        @toggleList="toggleSideQuests"
+      ></QuestsBlock>
+
+<!--      <div id="side-quests">
+        <button
+          class="default-button"
+          v-if="sideQuests.length"
+          @click="toggleSideQuests"
         >
-          {{ quest.label }}
-        </label>
+          Побочные квесты
+        </button>
 
-        <div class="row">
-          <button
-            class="content-button"
-            :id="'quest-button' + index"
-            style="margin-right: 50px"
-          >
-            Добавить подзадачу
-          </button>
-
-          <button
-            class="content-button"
-            @click="removeQuest(index)"
-          >
-            Удалить
-          </button>
-        </div>
-      </div>
-
-      <button
-        class="default-button"
-        v-if="isSideQuestsBtnVisible"
-        @click="toggleSideQuests"
-      >
-        Побочные квесты
-      </button>
-
-      <div
-        v-for="(quest, index) in sideQuests"
-        :key="quest.id"
-        class="quest"
-        v-show="isSideQuestsListOpen"
-      >
-        <label
-          :for="`quest-button` + index"
-          style="font-size: 32px; margin-bottom: 50px; cursor: text"
-          contenteditable="true"
-        >
-          {{ quest.label }}
-        </label>
-
-        <div class="row">
-          <button
-            class="content-button"
-            :id="'quest-button' + index"
-            style="margin-right: 50px"
-          >
-            Добавить подзадачу
-          </button>
-
-          <button
-            class="content-button"
-            @click="removeQuest(index + mainQuests.length)"
-          >
-            Удалить
-          </button>
-        </div>
-      </div>
-
+        <QuestsList
+          v-for="(quest, index) in sideQuests"
+          :key="quest.id"
+          :index="index + mainQuests.length"
+          :quest="quest"
+          @removeQuest="removeQuest"
+          v-show="isSideQuestsListOpen"
+        ></QuestsList>
+      </div>-->
+      <!--      quest-container-->
     </div>
 
   </div>
@@ -335,6 +286,12 @@ const toggleSideQuests = () => {
   margin-top: 20px;
 }
 
+@media screen and (max-width: 768px) {
+  .tasks-block {
+    width: calc(100%);
+  }
+}
+
 .quest {
   display: flex;
   flex-direction: column;
@@ -342,11 +299,5 @@ const toggleSideQuests = () => {
   padding: 10px;
 
   margin-top: 20px;
-}
-
-@media screen and (max-width: 768px) {
-  .tasks-block {
-    width: calc(100%);
-  }
 }
 </style>
