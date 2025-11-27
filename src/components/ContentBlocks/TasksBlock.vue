@@ -154,24 +154,6 @@ const toggleSideQuests = () => {
     </div>
 
     <div class="quests-container">
-<!--            <div id="main-quests">
-              <button
-                class="default-button"
-                v-if="mainQuests.length"
-                @click="toggleMainQuests"
-              >
-                Основные квесты
-              </button>
-
-              <QuestsList
-                v-for="(quest, index) in mainQuests"
-                :key="quest.id"
-                :index="index"
-                :quest="quest"
-                @removeQuest="removeQuest"
-                v-show="isMainQuestsListOpen"
-              ></QuestsList>
-            </div>-->
       <QuestsBlock
         :is-list-open="isMainQuestsListOpen"
         :button_text="'Основные квесты'"
@@ -189,26 +171,6 @@ const toggleSideQuests = () => {
         @removeQuest="removeQuest"
         @toggleList="toggleSideQuests"
       ></QuestsBlock>
-
-<!--      <div id="side-quests">
-        <button
-          class="default-button"
-          v-if="sideQuests.length"
-          @click="toggleSideQuests"
-        >
-          Побочные квесты
-        </button>
-
-        <QuestsList
-          v-for="(quest, index) in sideQuests"
-          :key="quest.id"
-          :index="index + mainQuests.length"
-          :quest="quest"
-          @removeQuest="removeQuest"
-          v-show="isSideQuestsListOpen"
-        ></QuestsList>
-      </div>-->
-      <!--      quest-container-->
     </div>
 
   </div>
