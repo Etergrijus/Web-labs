@@ -1,5 +1,6 @@
-import {nextTick} from "vue";
+import {nextTick, Ref} from "vue";
 
+//Рассчитываем геометрию для показа tooltip-ов с ошибками
 export const updateTooltipPosition = async (errorVar: boolean, inputRef: HTMLElement, spanRef: HTMLElement) => {
   if (errorVar && inputRef && spanRef) {
     await nextTick()
@@ -29,3 +30,4 @@ export const updateTooltipPosition = async (errorVar: boolean, inputRef: HTMLEle
     }
   }
 }
+

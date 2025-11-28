@@ -69,6 +69,12 @@ main .welcome-text {
   border-color: #eeeeee;
   text-align: center;
   font-family: Silkscreen, serif;
+
+    /*Чтобы при зажатии кнопки и перемещении мыши ссылка не тянулась с нами */
+  -webkit-user-drag: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-user-select: none;
 }
 
 .default-button:hover {
@@ -87,7 +93,31 @@ main .welcome-text {
   font-family: Silkscreen, serif;
   padding: 20px;
   margin-bottom: 10px;
+
   border-color: #6F828A;
+  border-style: solid;
+  border-width: 2px;
+
+  box-sizing: border-box;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+
+  /*Чтобы при зажатии кнопки и перемещении мыши ссылка не тянулась с нами */
+  -webkit-user-drag: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Состояние при наведении мыши */
+.content-button:hover {
+  background-color: #e05010; /* Чуть светлее или другой цвет */
+  /* transform: translateY(-2px); /* Легкий эффект приподнятия */
+}
+
+/* Состояние при нажатии */
+.content-button:active {
+  background-color: #a03000; /* Более темный цвет */
+  transform: translateY(1px); /* Легкий эффект "нажатия" */
 }
 
 #app {

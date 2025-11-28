@@ -1,20 +1,10 @@
 <script setup lang="ts">
-
-import router from "@/router";
-
-const archiveRoute = () => {
-  router.push('/archive')
-}
-
-const homeRoute = () => {
-  router.push('/')
-}
 </script>
 
 <template>
   <div class="content-header">
-    <button class="content-button" @click="archiveRoute">Посмотреть летопись</button>
-    <button class="content-button" @click="homeRoute">Выйти</button>
+    <router-link to="/archive" class="content-button">Посмотреть летопись</router-link>
+    <router-link to="/" class="content-button">Выйти</router-link>
   </div>
 </template>
 

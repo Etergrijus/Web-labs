@@ -33,7 +33,7 @@ const router = createRouter({
       path: '/content',
       name: 'content',
       component: ContentView,
-      meta: {layout: ContentLayout, title: 'Мои планы'}
+      meta: {layout: ContentLayout, title: 'Мои квесты'}
     },
     {
       path: '/archive',

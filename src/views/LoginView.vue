@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import {ref} from "vue";
+import {inject, nextTick, onMounted, onUnmounted, type Ref, ref, watch} from "vue";
 import router from "@/router";
+import {updateTooltipPosition} from "../composables/authFunctions.ts";
+import AuthBlock from "@/components/Advanced/AuthBlock.vue";
 
 const login = ref('');
 const password = ref('');
@@ -8,7 +10,24 @@ const password = ref('');
 const loginError = ref(false);
 const passwordError = ref(false);
 
-const submitForm = (event) => {
+const loginKeyUp = async () => {
+  loginError.value = login.value.trim().length === 0
+  if (loginError.value) {
+    await nextTick()
+    await updateTooltipPosition(loginError.value, loginInputRef.value, loginSpanRef.value)
+  }
+}
+
+const passwordKeyUp = async () => {
+  passwordError.value = password.value.trim().length === 0
+  if (passwordError.value) {
+    await nextTick()
+    await updateTooltipPosition(passwordError.value, passwordInputRef.value, passwordSpanRef.value)
+  }
+}
+
+//Проверяем форму, чтобы значения были не пустыми
+const submitForm = async (event: Event) => {
   event.preventDefault();
 
   loginError.value = false;
@@ -16,16 +35,63 @@ const submitForm = (event) => {
 
   if (login.value.trim().length === 0) {
     loginError.value = true;
+    await nextTick()
+    await updateTooltipPosition(loginError.value, loginInputRef.value, loginSpanRef.value)
   }
 
   if (password.value.trim().length === 0) {
     passwordError.value = true;
+    await nextTick()
+    await updateTooltipPosition(passwordError.value, passwordInputRef.value, passwordSpanRef.value)
   }
 
   if (!(loginError.value || passwordError.value)) {
-    router.push('/content');
+    await nextTick()
+    await router.push('/content');
   }
 }
+
+const loginInputRef = ref<HTMLElement | null>(null);
+const loginSpanRef = ref<HTMLElement | null>(null);
+const passwordInputRef = ref<HTMLElement | null>(null);
+const passwordSpanRef = ref<HTMLElement | null>(null);
+
+//Рефы на аутх-блоки
+//Отсюда будем получать рефы на input и span каждого блока
+const loginAuthBlockRef = ref<InstanceType<typeof AuthBlock> | null>(null);
+const passwordAuthBlockRef = ref<InstanceType<typeof AuthBlock> | null>(null);
+
+watch(loginAuthBlockRef, (newRef) => {
+  if (newRef) { // Если экземпляр компонента AuthBlock теперь доступен
+    // newRef.inputRef - это экспортированный ref из AuthBlock
+    loginInputRef.value = newRef.inputRef; // Присваиваем его к нашему рефу в родителе
+    loginSpanRef.value = newRef.spanRef;   // То же самое для span
+  }
+});
+watch(passwordAuthBlockRef, (newRef) => {
+  if (newRef) {
+    passwordInputRef.value = newRef.inputRef;
+    passwordSpanRef.value = newRef.spanRef;
+  }
+});
+
+onMounted(() => {
+  window.addEventListener('resize', () => {
+    updateTooltipPosition(loginError.value, loginInputRef.value, loginSpanRef.value)
+  });
+  window.addEventListener('resize', () => {
+    updateTooltipPosition(passwordError.value, passwordInputRef.value, passwordSpanRef.value)
+  });
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', () => {
+    updateTooltipPosition(loginError.value, loginInputRef.value, loginSpanRef.value)
+  });
+  window.removeEventListener('resize', () => {
+    updateTooltipPosition(passwordError.value, passwordInputRef.value, passwordSpanRef.value)
+  });
+})
 </script>
 
 <template>
@@ -35,20 +101,36 @@ const submitForm = (event) => {
 
   <div class="auth-block">
     <form action="/login" method="post" @submit="submitForm">
-      <div class="input-container">
-        <label for="username" class="edit-label">Имя пользователя:</label>
-        <input type="text" id="username" name="username" class="edit-input"
-               v-model="login">
-        <span v-if="loginError" class="tooltip"> Введите имя пользователя</span>
-      </div>
+      <AuthBlock
+        id="login"
+        type="text"
+        label_text="Имя пользователя:"
+        v-model="login"
+        :span_show="loginError"
+        span_text="Введите имя пользователя"
+        ref="loginAuthBlockRef"
+        @input-key-up="loginKeyUp"
+      >
+      </AuthBlock>
 
-      <div class="input-container">
-        <label for="password" class="edit-label">Пароль:</label>
-        <input type="password" id="password" name="password" class="edit-input"
-               v-model="password">
-        <span v-if="passwordError" class="tooltip"> Введите пароль</span>
-      </div>
-      <button type="submit" class="default-button"> Войти</button>
+
+      <AuthBlock
+        id="password"
+        type="password"
+        label_text="Пароль:"
+        v-model="password"
+        :span_show="passwordError"
+        span_text="Введите пароль"
+        ref="passwordAuthBlockRef"
+        @input-key-up="passwordKeyUp"
+      >
+      </AuthBlock>
+      <button
+        type="submit"
+        class="default-button"
+      >
+        Войти
+      </button>
     </form>
     <router-link to="/" class="default-button">Обратно</router-link>
   </div>

@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import {ref} from "vue";
+import {nextTick, onMounted, onUnmounted, ref, watch} from "vue";
 import router from "@/router";
+import {updateTooltipPosition} from "@/composables/authFunctions.ts";
+import AuthBlock from "@/components/Advanced/AuthBlock.vue";
 
 const login = ref('');
 const password = ref('');
@@ -12,13 +14,87 @@ const passwordError = ref(false);
 const checkerPasswordError = ref(false);
 const charNameError = ref(false);
 
+const loginInputRef = ref<HTMLElement | null>(null);
+const loginSpanRef = ref<HTMLElement | null>(null);
+const passwordInputRef = ref<HTMLElement | null>(null);
+const passwordSpanRef = ref<HTMLElement | null>(null);
+const checkerPasswordInputRef = ref<HTMLElement | null>(null);
+const checkerPasswordSpanRef = ref<HTMLElement | null>(null);
+const charNameInputRef = ref<HTMLElement | null>(null);
+const charNameSpanRef = ref<HTMLElement | null>(null);
+
+onMounted(() => {
+  window.addEventListener('resize', () => {
+    updateTooltipPosition(loginError.value, loginInputRef.value, loginSpanRef.value)
+  });
+  window.addEventListener('resize', () => {
+    updateTooltipPosition(passwordError.value, passwordInputRef.value, passwordSpanRef.value)
+  });
+  window.addEventListener('resize', () => {
+    updateTooltipPosition(checkerPasswordError.value, checkerPasswordInputRef.value,
+      checkerPasswordSpanRef.value)
+  });
+  window.addEventListener('resize', () => {
+    updateTooltipPosition(charNameError.value, charNameInputRef.value, charNameSpanRef.value)
+  });
+})
+
 const errors = [loginError,
   passwordError,
   checkerPasswordError,
   charNameError
 ];
 
-const submitForm = (event) => {
+const loginKeyUp = async () => {
+  loginError.value = login.value.trim().length === 0
+  if (loginError.value) {
+    await nextTick()
+    await updateTooltipPosition(loginError.value, loginInputRef.value, loginSpanRef.value)
+  }
+}
+
+const passwordKeyUp = async () => {
+  passwordError.value = password.value.trim().length === 0
+  if (passwordError.value) {
+    await nextTick()
+    await updateTooltipPosition(passwordError.value, passwordInputRef.value, passwordSpanRef.value)
+  }
+  checkerPasswordError.value = password.value != checkerPassword.value
+  if (checkerPasswordError.value) {
+    await nextTick()
+    await updateTooltipPosition(
+      checkerPasswordError.value,
+      checkerPasswordInputRef.value,
+      checkerPasswordSpanRef.value
+    )
+  }
+}
+
+const checkerPasswordKeyUp = async () => {
+  checkerPasswordError.value = checkerPassword.value != password.value
+  if (checkerPasswordError.value) {
+    await nextTick()
+    await updateTooltipPosition(
+      checkerPasswordError.value,
+      checkerPasswordInputRef.value,
+      checkerPasswordSpanRef.value
+    )
+  }
+}
+
+const charNameKeyUp = async () => {
+  charNameError.value = charName.value.trim().length === 0
+  if (charNameError.value) {
+    await nextTick()
+    await updateTooltipPosition(
+      charNameError.value,
+      charNameInputRef.value,
+      charNameSpanRef.value
+    )
+  }
+}
+
+const submitForm = async (event: Event) => {
   event.preventDefault();
 
   for (let error of errors) {
@@ -27,22 +103,30 @@ const submitForm = (event) => {
 
   if (login.value.trim().length === 0) {
     loginError.value = true;
-    console.log('loginError');
+    await nextTick()
+    await updateTooltipPosition(loginError.value, loginInputRef.value, loginSpanRef.value)
   }
 
   if (password.value.trim().length === 0) {
     passwordError.value = true;
-    console.log('passwordError');
+    await nextTick()
+    await updateTooltipPosition(passwordError.value, passwordInputRef.value, passwordSpanRef.value)
   }
 
   if (checkerPassword.value != password.value) {
     checkerPasswordError.value = true;
-    console.log('checkerPasswordError');
+    await nextTick()
+    await updateTooltipPosition(
+      checkerPasswordError.value,
+      checkerPasswordInputRef.value,
+      checkerPasswordSpanRef.value
+    )
   }
 
   if (charName.value.trim().length === 0) {
     charNameError.value = true;
-    console.log('charNameError');
+    await nextTick()
+    await updateTooltipPosition(charNameError.value, charNameInputRef.value, charNameSpanRef.value)
   }
 
   for (let error of errors) {
@@ -50,8 +134,58 @@ const submitForm = (event) => {
       return;
   }
 
-  router.push('/content');
+  await nextTick()
+  await router.push('/content');
 }
+
+//Рефы на аутх-блоки
+//Отсюда будем получать рефы на input и span каждого блока
+const loginAuthBlockRef = ref<InstanceType<typeof AuthBlock> | null>(null);
+watch(loginAuthBlockRef, (newRef) => {
+  if (newRef) { // Если экземпляр компонента AuthBlock теперь доступен
+    // newRef.inputRef - это экспортированный ref из AuthBlock
+    loginInputRef.value = newRef.inputRef; // Присваиваем его к нашему рефу в родителе
+    loginSpanRef.value = newRef.spanRef;   // То же самое для span
+  }
+});
+
+const passwordAuthBlockRef = ref<InstanceType<typeof AuthBlock> | null>(null);
+watch(passwordAuthBlockRef, (newRef) => {
+  if (newRef) {
+    passwordInputRef.value = newRef.inputRef;
+    passwordSpanRef.value = newRef.spanRef;
+  }
+});
+const checkerPasswordAuthBlockRef = ref<InstanceType<typeof AuthBlock> | null>(null);
+watch(checkerPasswordAuthBlockRef, (newRef) => {
+  if (newRef) {
+    checkerPasswordInputRef.value = newRef.inputRef;
+    checkerPasswordSpanRef.value = newRef.spanRef;
+  }
+});
+const charNameAuthBlockRef = ref<InstanceType<typeof AuthBlock> | null>(null);
+watch(charNameAuthBlockRef, (newRef) => {
+  if (newRef) {
+    charNameInputRef.value = newRef.inputRef;
+    charNameSpanRef.value = newRef.spanRef;
+  }
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', () => {
+    updateTooltipPosition(loginError.value, loginInputRef.value, loginSpanRef.value)
+  });
+  window.removeEventListener('resize', () => {
+    updateTooltipPosition(passwordError.value, passwordInputRef.value, passwordSpanRef.value)
+  });
+  window.removeEventListener('resize', () => {
+    updateTooltipPosition(checkerPasswordError.value, checkerPasswordInputRef.value,
+      checkerPasswordSpanRef.value)
+  });
+  window.removeEventListener('resize', () => {
+    updateTooltipPosition(charNameError.value, charNameInputRef.value, charNameSpanRef.value)
+  });
+})
 </script>
 
 <template>
@@ -60,36 +194,66 @@ const submitForm = (event) => {
   </div>
 
   <div class="auth-block">
-    <form action="/login" method="post" @submit="submitForm">
-      <div class="input-container">
-        <label for="username" class="edit-label">Имя пользователя:</label>
-        <input type="text" id="username" name="username" class="edit-input"
-               v-model="login">
-        <span v-if="loginError" class="tooltip">Введите имя пользователя</span>
-      </div>
+    <form
+      action="/login"
+      method="post"
+      @submit="submitForm"
+    >
+      <AuthBlock
+        id="login"
+        type="text"
+        label_text="Имя пользователя:"
+        v-model="login"
+        :span_show="loginError"
+        span_text="Введите имя пользователя"
+        ref="loginAuthBlockRef"
+        @input-key-up="loginKeyUp"
+      >
+      </AuthBlock>
 
-      <div class="input-container">
-        <label for="password" class="edit-label">Пароль:</label>
-        <input type="password" id="password" name="password" class="edit-input"
-               v-model="password">
-        <span v-if="passwordError" class="tooltip">Введите пароль</span>
-      </div>
+      <AuthBlock
+        id="password"
+        type="password"
+        label_text="Пароль:"
+        v-model="password"
+        :span_show="passwordError"
+        span_text="Введите пароль"
+        ref="passwordAuthBlockRef"
+        @input-key-up="passwordKeyUp"
+      >
+      </AuthBlock>
 
-      <div class="input-container">
-        <label for="password-check" class="edit-label">Подтвердите пароль:</label>
-        <input type="password" id="password-check" name="password-check"
-               class="edit-input" v-model="checkerPassword">
-        <span v-if="checkerPasswordError" class="tooltip">Пароли не совпадают</span>
-      </div>
+      <AuthBlock
+        id="password-check"
+        type="password"
+        label_text="Подтвердите пароль:"
+        v-model="checkerPassword"
+        :span_show="checkerPasswordError"
+        span_text="Пароли не совпадают"
+        ref="checkerPasswordAuthBlockRef"
+        @input-key-up="checkerPasswordKeyUp"
+      >
+      </AuthBlock>
 
-      <div class="input-container">
-        <label for="char-name" class="edit-label">Введите имя персонажа:<br>
-          <em><sub>(В диапазоне от вашего ФИО до "Мы, император и самодержец")</sub></em></label>
-        <input type="text" id="char-name" name="char-name" class="edit-input" v-model="charName">
-        <span v-if="charNameError" class="tooltip">Введите имя персонажа</span>
-      </div>
+      <AuthBlock
+        id="char-name"
+        type="text"
+        :label_text="`Введите имя персонажа:<br>
+        <em><sub> (В диапазоне от вашего ФИО до &quot;Мы, император и самодержец&quot;)</sub></em>`"
+        v-model="charName"
+        :span_show="charNameError"
+        span_text="Введите имя персонажа"
+        ref="charNameAuthBlockRef"
+        @input-key-up="charNameKeyUp"
+      >
+      </AuthBlock>
 
-      <button type="submit" class="default-button">Зарегистрироваться</button>
+      <button
+        type="submit"
+        class="default-button"
+      >
+        Зарегистрироваться
+      </button>
     </form>
     <router-link to="/" class="default-button">Обратно</router-link>
   </div>
