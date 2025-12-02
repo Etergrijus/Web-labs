@@ -1,22 +1,26 @@
 <script setup lang="ts">
 
-import {computed, nextTick, onUnmounted, ref} from "vue";
-import QuestsBlock from "../Advanced/QuestsBlock.vue";
-import QuestsList from "../Advanced/QuestsList.vue";
+import {computed, nextTick, onUnmounted, ref, watch} from "vue";
+import QuestsBlock from "../QuestComponents/QuestsBlock.vue";
+import QuestsList from "../QuestComponents/QuestsList.vue";
+import AddingImageButton from "@/components/Design/AddingImageButton.vue";
 //import QuestsList from "@/components/Advanced/QuestsList.vue";
 
 const isMenuOpen = ref(false);
-const buttonRef = ref<HTMLElement | null>(null)
+
+//Реф на кнопку добавления квеста тянем из дочернего компонента
+const addQuestButtonRef = ref<InstanceType<typeof AddingImageButton> | null>(null)
 const menuRef = ref<HTMLElement | null>(null)
 
 //Обновляем позицию меню добавления квеста,
 //чтобы обеспечить переносимость при прокрутке и изменении размера экрана
 const updatePosition = async () => {
-  if (isMenuOpen.value && buttonRef.value && menuRef.value) {
+  const buttonElement = addQuestButtonRef.value?.buttonRef
+  if (isMenuOpen.value && buttonElement && menuRef.value) {
     await nextTick() // Ждём, если нужно
-    const buttonRect = buttonRef.value.getBoundingClientRect()
-    menuRef.value.style.top = `${buttonRect.bottom + 10}px`
-    menuRef.value.style.left = `${buttonRect.left - 55}px`
+    const buttonRect = buttonElement.getBoundingClientRect()
+    menuRef.value.style.top = `${buttonRect.bottom - 20}px`
+    menuRef.value.style.left = `${buttonRect.left + 15}px`
   }
 }
 
@@ -103,6 +107,7 @@ const removeQuest = (index: number) => {
 const isMainQuestsListOpen = ref(true);
 const toggleMainQuests = () => {
   isMainQuestsListOpen.value = !isMainQuestsListOpen.value
+  console.log(isMainQuestsListOpen.value)
 }
 const isSideQuestsListOpen = ref(true);
 const toggleSideQuests = () => {
@@ -114,16 +119,14 @@ const toggleSideQuests = () => {
   <div class="tasks-block">
 
     <div class="justify">
-      <button
-        class="content-button"
-        ref="buttonRef"
-        type="button"
+      <AddingImageButton
+        button-text="Добавить квест"
+        image-url="/img/parchment.png"
         @click="toggleMenu"
         :aria-expanded="isMenuOpen"
-        aria-haspopup="menu"
-      >
-        Добавить квест
-      </button>
+        ref="addQuestButtonRef"
+      ></AddingImageButton>
+
     </div>
 
     <!--    v-show для открытия меню -->
@@ -254,12 +257,4 @@ const toggleSideQuests = () => {
   }
 }
 
-.quest {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 10px;
-
-  margin-top: 20px;
-}
 </style>

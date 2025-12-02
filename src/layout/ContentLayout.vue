@@ -6,7 +6,7 @@ import Footer from "@/components/App/Footer.vue";
 </script>
 
 <template>
-  <div class="wrap">
+  <div class="wrap content">
     <ContentHeader/>
     <main class="content-place wrap">
       <router-view/>
@@ -16,8 +16,8 @@ import Footer from "@/components/App/Footer.vue";
 </template>
 
 <style scoped>
-.arial {
-  font-family: Arial serif;
+.content {
+  background-color: #fdf4e3;
 }
 
 .content-place {
@@ -33,8 +33,6 @@ import Footer from "@/components/App/Footer.vue";
   .content-place .default-button {
     width: 75%;
   }
-
-
 }
 
 @media screen and (max-width: 500px) {
@@ -45,8 +43,6 @@ import Footer from "@/components/App/Footer.vue";
   .content-place .char-block h2 {
     font-size: 16px;
   }
-
-
 }
 
 </style>

@@ -2,14 +2,16 @@
 
 import Heart from "@/components/Drawnings/Heart.vue";
 import Star from "@/components/Drawnings/Star.vue";
-import Lightning from "@/components/Drawnings/Lightning.vue";
+import Lightning from "@/components/Drawnings/Bolt.vue";
 import GearWheel from "@/components/Drawnings/GearWheel.vue";
 import {ref} from "vue";
 import {useFileDialog} from "@vueuse/core";
+import AttributeString from "@/components/Advanced/AttributeString.vue";
+import SimpleImageButton from "@/components/Design/SimpleImageButton.vue";
 
 const imageSrc = ref('/img/empty_photo.jpg'); // Реактивная переменная для src
 
-const {files, open, reset, onCancel, onChange} = useFileDialog ({
+const {files, open, reset, onCancel, onChange} = useFileDialog({
   accept: 'image/*', // Set to accept only image files
   directory: false, // Select directories instead of files if set true
 })
@@ -21,19 +23,50 @@ onChange(() => {
   }
 })
 
+//Переменные для характеристик
+const heartValue = ref(0)
+const boltValue = ref(0)
+const starValue = ref(0)
+const gearWheelValue = ref(0)
+
 </script>
 
 <template>
-<div class="char-block">
+  <div class="char-block">
     <h1 style="margin-top: 40px">Тут будет ваше имя</h1>
     <img :src="imageSrc" width="400px">
-    <button class="content-button" type="button" @click="open">Сменить фото</button>
+    <SimpleImageButton style="margin-top: 30px"
+                       button-text="Сменить портрет"
+                       image-url="img/canvas.png"
+                       @click="open"
+                       :top_="90"
+                       font_color="white"
+                       :image_width="300"
+                       font_family="Silkscreen"
+    >
+    </SimpleImageButton>
     <h2>Мои характеристики</h2>
-    <div class="characteristics-container">
-      <Heart/>
-      <Lightning/>
-      <Star/>
-      <GearWheel/>
+    <div class="attributes-container">
+      <AttributeString
+        :attribute_value="heartValue"
+        :attribute_emblem="'Heart'"
+      >
+      </AttributeString>
+      <AttributeString
+        :attribute_value="boltValue"
+        :attribute_emblem="'Bolt'"
+      >
+      </AttributeString>
+      <AttributeString
+        :attribute_value="starValue"
+        :attribute_emblem="'Star'"
+      >
+      </AttributeString>
+      <AttributeString
+        :attribute_value="gearWheelValue"
+        :attribute_emblem="'GearWheel'"
+      >
+      </AttributeString>
     </div>
   </div>
 </template>
@@ -52,25 +85,16 @@ onChange(() => {
   margin-top: 30px;
 }
 
-.characteristics-container {
+.attributes-container {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   width: 100%;
-  align-items: center;
+  /*align-items: center;*/
   gap: 50px;
   margin-left: 50px;
 
-   flex-wrap: wrap;  /* Перенос на новую строку, если не помещаются */
-  box-sizing: border-box;  /* Учитываем padding/margin в ширине */
-}
-
-/* Стили для самих SVG-компонентов (предполагаем, что они рендерят <svg>) */
-.characteristics-container svg {
-  flex: 1;  /* Равномерное распределение ширины между SVG */
-/*  max-width: 100%;  !* Максимальная ширина — 100% от контейнера, чтобы не выходили за границы *!*/
-  height: auto;  /* Автоматическая высота для сохранения пропорций */
-  min-width: 50px;  /* Минимальная ширина, чтобы не сжимались слишком сильно (настрой под нужды) */
-  max-width: 100px;
+  flex-wrap: wrap; /* Перенос на новую строку, если не помещаются */
+  box-sizing: border-box; /* Учитываем padding/margin в ширине */
 }
 
 @media screen and (max-width: 768px) {
@@ -78,7 +102,7 @@ onChange(() => {
     width: calc(100%);
   }
 
-  .characteristics-container {
+  .attributes-container {
     flex-direction: column;
     gap: 5px;
     width: 50%;

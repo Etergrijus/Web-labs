@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import type {Quest} from "../ContentBlocks/TasksBlock.vue";
-import QuestsList from "../Advanced/QuestsList.vue";
+import QuestsList from "./QuestsList.vue";
 
 const props = defineProps<{
   button_text: string,
@@ -37,7 +37,7 @@ const handleRemove = (localIndex: number) => {
       :index="index"
       :quest="quest"
       @removeQuest="handleRemove(index)"
-      v-show="isListOpen"
+      v-if="isListOpen"
     ></QuestsList>
 </template>
 

@@ -5,11 +5,15 @@ import TasksBlock from "@/components/ContentBlocks/TasksBlock.vue";
 </script>
 
 <template>
-  <CharBlock/>
-  <TasksBlock/>
+    <CharBlock/>
+    <TasksBlock/>
 </template>
 
 <style scoped>
+.content {
+  background-color: #fdf4e3;
+}
+
 @media screen and (max-width: 768px) {
   .content-button {
     font-size: 1.0em;
@@ -17,7 +21,7 @@ import TasksBlock from "@/components/ContentBlocks/TasksBlock.vue";
 }
 
 @media screen and (max-width: 500px) {
-    .content-button {
+  .content-button {
     font-size: 0.8em;
   }
 }

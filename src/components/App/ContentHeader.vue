@@ -1,10 +1,37 @@
 <script setup lang="ts">
+import SimpleImageButton from "@/components/Design/SimpleImageButton.vue";
 </script>
 
 <template>
   <div class="content-header">
-    <router-link to="/archive" class="content-button">Посмотреть летопись</router-link>
-    <router-link to="/" class="content-button">Выйти</router-link>
+    <div class="img-button">
+      <router-link to="/archive">
+        <SimpleImageButton
+          button-text="Посмотреть летопись"
+          image-url="img/archive.png"
+          :top_="94"
+          font_family="Silkscreen"
+          font_color="white"
+        >
+        </SimpleImageButton>
+      </router-link>
+    </div>
+
+    <div class="img-button">
+      <router-link to="/">
+        <SimpleImageButton
+          button-text="Выйти в Okno"
+          image-url="img/window.png"
+          font_color="white"
+          :font_size="24"
+          :top_="94"
+          font_family="Silkscreen"
+          :image_width="200"
+          :image_height="200"
+        >
+        </SimpleImageButton>
+      </router-link>
+    </div>
   </div>
 </template>
 
@@ -14,7 +41,7 @@
   justify-content: right;
 }
 
-.content-header .content-button {
+.img-button {
   margin: 15px;
   width: initial;
 }
@@ -24,4 +51,6 @@
     flex-direction: column;
   }
 }
+
+
 </style>
