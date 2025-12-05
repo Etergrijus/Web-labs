@@ -13,14 +13,14 @@ html, body {
 
 @font-face {
   font-family: 'Silkscreen';
-  src: url("/public/fonts/Silkscreen-font.ttf") format('truetype');
+  src: url("/fonts/Silkscreen-font.ttf") format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Allegreto';
-  src: url("/public/fonts/allegretto-script-two.ttf") format('truetype');
+  src: url("/fonts/allegretto-script-two.ttf") format('truetype');
   font-weight: normal;
   font-style: normal;
 }
