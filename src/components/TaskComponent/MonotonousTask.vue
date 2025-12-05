@@ -32,7 +32,7 @@ const props = defineProps<{
         >
           {{ taskData.periodValue }}
         </label>
-        <select v-model="taskData.periodMeasureUnit" name="periods" class="in-row-margin">
+        <select v-model="taskData.periodMeasureUnit" name="periods" class="in-row-margin" disabled>
           <option value="minute">Минута</option>
           <option value="hour">Час</option>
           <option value="day">День</option>
@@ -77,5 +77,24 @@ const props = defineProps<{
 .flex_wrap {
   /*Перенос*/
   flex-wrap: wrap;
+}
+
+select {
+  font-size: 24px;
+  font-family: Silkscreen, serif;
+  border: 2px solid darkgoldenrod;
+  border-radius: 15px;
+  outline: none;
+  color: white; /* Белый текст по умолчанию */
+}
+
+select:disabled {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border: none;
+  background-color: #151719;
+  color: white;
+  opacity: 0.9;
 }
 </style>

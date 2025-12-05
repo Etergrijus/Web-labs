@@ -7,7 +7,7 @@ services:
     # Имя файла с инструкциями по сборке
     build:
        # Указывает, где находится Dockerfile и исходный код. '.' означает текущую директорию (backend/)
-      context: .
+      context: ./Backend
       # Имя файла с инструкциями по сборке
       dockerfile: Dockerfile
 
