@@ -1,14 +1,19 @@
 <script setup lang="ts">
 import {Quest} from "../ContentBlocks/TasksBlock.vue"
-import {computed, nextTick, ref, shallowRef} from "vue";
+import {computed, nextTick, ref, shallowRef, watch} from "vue";
 import SimpleImageButton from "@/components/Design/SimpleImageButton.vue";
 import TaskDialog from "@/components/TaskComponent/TaskDialog.vue";
 import SimpleTask from "../TaskComponent/SimpleTask.vue";
 import CycleTask from "@/components/TaskComponent/CycleTask.vue";
+import DeadlineTask from "@/components/TaskComponent/DeadlineTask.vue";
+import MonotonousTask from "@/components/TaskComponent/MonotonousTask.vue";
 
 const props = defineProps<{
   quest: Quest,
-  index: number;
+  index: number,
+  onOpenDialog: Function, // Функция для открытия, приходит из QuestsBlock
+  addingTask: string,
+  targetId: number,
 }>();
 
 const labelId = computed(() => `quest-label-${props.index}`);
@@ -45,8 +50,10 @@ let nextId = 1
 const componentNamesMap = {
   [TaskTypes.SIMPLE]: SimpleTask,
   [TaskTypes.CYCLE]: CycleTask,
+  [TaskTypes.DEADLINE]: DeadlineTask,
+  [TaskTypes.MONOTONOUS]: MonotonousTask
 };
-const addTask = (taskType: string) => {
+const addTask = (taskType: string /*| undefined*/) => {
   let componentName: HTMLElement;
   let defaultTaskData: any;
 
@@ -56,7 +63,25 @@ const addTask = (taskType: string) => {
       break;
     case TaskTypes.CYCLE:
       componentName = componentNamesMap[TaskTypes.CYCLE];
-      defaultTaskData = { needfulCount: 1, doneCount: 0};
+      defaultTaskData = {needfulCount: 1, doneCount: 0};
+      break;
+    case TaskTypes.DEADLINE:
+      componentName = componentNamesMap[TaskTypes.DEADLINE]
+      //Сначала создаём эту штуку, которая хранит дату в ISO 8601 с учётом UTC,
+      //чтобы не париться над часовыми поясами
+      const milliseconds = Date.UTC(2030, 0, 1, 0, 0, 0)
+      //И делаем из этого дату
+      const date = new Date(milliseconds)
+      defaultTaskData = {deadlineDate: date.toJSON()}
+      break;
+    case TaskTypes.MONOTONOUS:
+      componentName = componentNamesMap[TaskTypes.MONOTONOUS]
+      defaultTaskData = {
+        needfulCount: 3,
+        doneCount: 0,
+        periodValue: 1,
+        periodMeasureUnit: "day"
+      };
       break;
   }
 
@@ -73,26 +98,11 @@ const addTask = (taskType: string) => {
   questTasks.value.push(newTask)
 }
 
-const isDialogOpen = ref(false)
-const taskDialogId = "taskDialog" + props.quest.id.toString()
-const showTaskDialog = async () => {
-  isDialogOpen.value = true
-  await nextTick()
-  const dialogElement = document.getElementById(taskDialogId)
-  if (dialogElement && dialogElement instanceof HTMLDialogElement) {
-    dialogElement.showModal()
-  } else
-    isDialogOpen.value = false
-}
-
-const closeDialog = async () => {
-  const dialogElement = document.getElementById(taskDialogId)
-  if (dialogElement && dialogElement instanceof HTMLDialogElement) {
-    dialogElement.close()
-    isDialogOpen.value = false
-    await nextTick()
+watch(() => props.addingTask, () => {
+  if (props.targetId === props.quest.id) {
+    addTask(props.addingTask)
   }
-}
+})
 </script>
 
 <template>
@@ -105,14 +115,14 @@ const closeDialog = async () => {
       {{ quest.label }}
     </label>
 
-    <div class="row">
+    <div class="row quest-row">
       <SimpleImageButton
         button-text="Добавить задачу"
         image-url="img/parchment.png"
         :font_size="36"
         :image_width="300"
         :image_height="150"
-        @click="showTaskDialog"
+        @click="/*showTaskDialog*/onOpenDialog"
       >
       </SimpleImageButton>
 
@@ -145,9 +155,6 @@ const closeDialog = async () => {
       ></component>
     </div>
   </div>
-
-  <TaskDialog v-if="isDialogOpen" :id="taskDialogId" @add-task="addTask" @close="closeDialog">
-  </TaskDialog>
 </template>
 
 <style scoped>
@@ -160,13 +167,12 @@ const closeDialog = async () => {
   margin-top: 20px;
 }
 
-.quest .row {
+.quest-row {
   justify-content: space-evenly;
   width: 100%;
 }
 
 .task {
-  justify-content: space-evenly;
   width: 80%;
 
 }
