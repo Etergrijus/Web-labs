@@ -7,7 +7,7 @@ services:
     # Имя файла с инструкциями по сборке
     build:
        # Указывает, где находится Dockerfile и исходный код. '.' означает текущую директорию (backend/)
-      context: ./Backend
+      context: Backend/Backend
       # Имя файла с инструкциями по сборке
       dockerfile: Dockerfile
 
@@ -24,7 +24,7 @@ services:
     # сразу же отражаются в контейнере без необходимости пересборки образа.
     # Формат: HOST_PATH:CONTAINER_PATH
     volumes:
-      - .:/app # Монтируем текущую директорию (backend/) в /app внутри контейнера.
+      - ./Backend:/app # Монтируем текущую директорию (backend/) в /app внутри контейнера.
                # Важно: Исключите папку venv, чтобы она не попала в контейнер.
                # Полностью: D:\PyCharmProjects\Web2\backend:/app
 
