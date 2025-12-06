@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import {nextTick, onMounted, onUnmounted, ref, watch} from "vue";
-import router from "@/router";
-import {updateTooltipPosition} from "@/composables/authFunctions.ts";
-import AuthBlock from "@/components/Advanced/AuthBlock.vue";
+import router from "../router";
+import {updateTooltipPosition} from "../composables/authFunctions";
+import AuthBlock from "../components/Advanced/AuthBlock.vue";
 
 const login = ref('');
 const password = ref('');

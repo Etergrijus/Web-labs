@@ -1,9 +1,8 @@
 {
-  "files": [],
   "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "Bundler",
     "lib": ["ESNext", "DOM"],
     "sourceMap": true,
 

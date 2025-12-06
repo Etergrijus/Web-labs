@@ -10,7 +10,7 @@ import MonotonousTask from "../TaskComponent/MonotonousTask.vue";
 const props = defineProps<{
   quest: Quest,
   index: number,
-  onOpenDialog: Function, // Функция для открытия, приходит из QuestsBlock
+  /*onOpenDialog: Function, */// Функция для открытия, приходит из QuestsBlock
   addingTask: string,
   targetId: number,
 }>();
@@ -18,7 +18,7 @@ const props = defineProps<{
 const labelId = computed(() => `quest-label-${props.index}`);
 const btnId = computed(() => `quest-button-${props.index}`);
 
-const emit = defineEmits(['removeQuest']);
+const emit = defineEmits(['removeQuest', 'onOpenDialog']);
 
 const removeQuest_ = () => {
   emit('removeQuest', props.index);
@@ -123,7 +123,7 @@ watch(() => props.addingTask, () => {
         :font_size="36"
         :image_width="300"
         :image_height="150"
-        @click="/*showTaskDialog*/onOpenDialog"
+        @click="$emit('onOpenDialog', quest.id)"
       >
       </SimpleImageButton>
 

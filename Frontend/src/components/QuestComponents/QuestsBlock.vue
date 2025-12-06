@@ -66,10 +66,10 @@ const handleAddTask = (taskType: string, targetId: number) => {
     :key="quest.id"
     :index="index"
     :quest="quest"
-    :on-open-dialog="() => openDialog(quest.id)"
     :adding-task="addingTask"
     :target-id="targetQuestId"
     @removeQuest="handleRemove(index)"
+    @on-open-dialog="openDialog"
   ></QuestsList>
 
   <TaskDialog v-if="openDialogQuestId"

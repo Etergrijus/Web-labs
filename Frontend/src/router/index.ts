@@ -9,7 +9,7 @@ import ContentLayout from "../layout/ContentLayout.vue";
 import ArchiveView from "../views/ArchiveView.vue";
 import {Component} from "vue";
 
-/*declare module 'vue-router' {
+declare module 'vue-router' {
   interface RouteMeta {
     // Каждый объект роута может иметь свой объект meta
     // Добавляем сюда все поля, которые вы ожидаете в meta
@@ -18,7 +18,7 @@ import {Component} from "vue";
     // Другие ваши мета-поля, если есть
     // requiresAuth?: boolean;
   }
-}*/
+}
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
