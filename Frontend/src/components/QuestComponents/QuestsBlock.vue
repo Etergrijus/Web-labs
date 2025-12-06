@@ -2,11 +2,9 @@
 
 import type {Quest} from "../ContentBlocks/TasksBlock.vue";
 import QuestsList from "./QuestsList.vue";
-import SimpleTask from "@/components/TaskComponent/SimpleTask.vue";
-import SimpleImageButton from "@/components/Design/SimpleImageButton.vue";
+import SimpleImageButton from "../Design/SimpleImageButton.vue";
 import {ref} from "vue";
-import TaskDialog from "@/components/TaskComponent/TaskDialog.vue";
-import {isDef} from "@vueuse/core";
+import TaskDialog from "../TaskComponent/TaskDialog.vue";
 
 const props = defineProps<{
   button_text: string,

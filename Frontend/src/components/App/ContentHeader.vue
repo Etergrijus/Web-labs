@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import SimpleImageButton from "@/components/Design/SimpleImageButton.vue";
+import SimpleImageButton from "../Design/SimpleImageButton.vue";
 </script>
 
 <template>

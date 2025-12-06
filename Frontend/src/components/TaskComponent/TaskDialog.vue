@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import TaskDialogLine from "@/components/TaskComponent/TaskDialogLine.vue";
+import TaskDialogLine from "../TaskComponent/TaskDialogLine.vue";
 import {onMounted, ref} from "vue";
 
 const props = defineProps<{

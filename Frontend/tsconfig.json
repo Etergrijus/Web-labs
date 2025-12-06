@@ -2,21 +2,25 @@
   "files": [],
   "compilerOptions": {
     "target": "ES2022",
-    "module": "CommonJS",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "lib": ["ESNext", "DOM"],
     "sourceMap": true,
 
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
 
     "paths": {
-      "@": ["./src"]
+      "@": ["./src"],
     }
   },
   "include": [
     "env.d.ts",
     "./src/**/*",
-    "./src/**/*.vue"
+    "./src/**/*.vue",
+    "vite.config.ts"
   ],
   "exclude": [
-    "./src/**/__tests__/*"
+    "./src/**/__tests__/*",
+    "node_modules"
   ]
 }

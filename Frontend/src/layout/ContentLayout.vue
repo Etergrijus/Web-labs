@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
-import ContentHeader from "@/components/App/ContentHeader.vue";
-import Footer from "@/components/App/Footer.vue";
+import ContentHeader from "../components/App/ContentHeader.vue";
+import Footer from "../components/App/Footer.vue";
 
 </script>
 

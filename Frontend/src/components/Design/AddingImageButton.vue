@@ -5,8 +5,7 @@ import {ref} from "vue";
 const props = defineProps<{
   imageUrl: string,
   buttonText: string,
-  ariaExpanded?: boolean;/*
-  ariaHaspopup?: string;*/
+  ariaExpanded?: boolean;
 }>()
 
 const emits = defineEmits(['click']);

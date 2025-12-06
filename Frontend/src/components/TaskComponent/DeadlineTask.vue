@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import SimpleImageButton from "@/components/Design/SimpleImageButton.vue";
+import SimpleImageButton from "../Design/SimpleImageButton.vue";
 import {computed, ref} from "vue";
 
 interface DeadlineData {

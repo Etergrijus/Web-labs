@@ -1,13 +1,9 @@
 <script setup lang="ts">
 
-import Heart from "@/components/Drawnings/Heart.vue";
-import Star from "@/components/Drawnings/Star.vue";
-import Lightning from "@/components/Drawnings/Bolt.vue";
-import GearWheel from "@/components/Drawnings/GearWheel.vue";
 import {ref} from "vue";
 import {useFileDialog} from "@vueuse/core";
-import AttributeString from "@/components/Advanced/AttributeString.vue";
-import SimpleImageButton from "@/components/Design/SimpleImageButton.vue";
+import AttributeString from "../Advanced/AttributeString.vue";
+import SimpleImageButton from "../Design/SimpleImageButton.vue";
 
 const imageSrc = ref('/img/empty_photo.jpg'); // Реактивная переменная для src
 

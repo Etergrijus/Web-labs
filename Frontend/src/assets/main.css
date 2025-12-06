@@ -13,14 +13,14 @@ html, body {
 
 @font-face {
   font-family: 'Silkscreen';
-  src: url("/fonts/Silkscreen-font.ttf") format('truetype');
+  src: url("../../public/fonts/Silkscreen-font.ttf") format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Allegreto';
-  src: url("/fonts/allegretto-script-two.ttf") format('truetype');
+  src: url("../../public/fonts/allegretto-script-two.ttf") format('truetype');
   font-weight: normal;
   font-style: normal;
 }
@@ -101,44 +101,6 @@ main .welcome-text {
   border-color: #ff2400;
 }
 
-/*.content-button {
-  border-radius: 30px;
-  background-color: #c04000;
-  font-size: 24px;
-  cursor: pointer;
-  display: inline-block;
-  text-decoration: none;
-  text-align: center;
-  font-family: Silkscreen, serif;
-  padding: 20px;
-  margin-bottom: 10px;
-
-  border-color: #6F828A;
-  border-style: solid;
-  border-width: 2px;
-
-  box-sizing: border-box;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-
-  !*Чтобы при зажатии кнопки и перемещении мыши ссылка не тянулась с нами *!
-  -webkit-user-drag: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  -webkit-user-select: none;
-}
-
-!* Состояние при наведении мыши *!
-.content-button:hover {
-  background-color: #e05010; !* Чуть светлее или другой цвет *!
-  !* transform: translateY(-2px); !* Легкий эффект приподнятия *!
-}
-
-!* Состояние при нажатии *!
-.content-button:active {
-  background-color: #a03000; !* Более темный цвет *!
-  transform: translateY(1px); !* Легкий эффект "нажатия" *!
-}*/
-
 .task-header-text {
   font-size: 26px;
   margin-bottom:80px;
@@ -166,7 +128,7 @@ main .welcome-text {
 }
 
 .checkbox:checked {
-  background-image: url("/img/stamp.png");
+  background-image: url("../../public/img/stamp.png");
   background-size: 100%, 100%;
   background-position: center center;
   background-repeat: no-repeat;

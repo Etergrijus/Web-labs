@@ -3,14 +3,15 @@ version: '3.8' # Указываем версию синтаксиса docker-com
 
 services:
   # Название сервиса (может быть любым, например, 'app', 'flask_api' и т.д.)
-  flask_app:
+  backend:
     # Имя файла с инструкциями по сборке
     build:
        # Указывает, где находится Dockerfile и исходный код. '.' означает текущую директорию (backend/)
-      context: Backend/Backend
+      context: ./Backend
       # Имя файла с инструкциями по сборке
       dockerfile: Dockerfile
 
+    container_name: flask_backend
     # Порты, которые будут проброшены.
     # Формат: HOST_PORT:CONTAINER_PORT
     # Это означает, что порт 5000 на вашем компьютере (хост) будет доступен
@@ -28,3 +29,21 @@ services:
                # Важно: Исключите папку venv, чтобы она не попала в контейнер.
                # Полностью: D:\PyCharmProjects\Web2\backend:/app
 
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile.frontend
+
+    container_name: vue_frontend
+
+    ports:
+      - "5173:80"
+
+    volumes:
+      - ./frontend/dist:/usr/share/nginx/html # Монтируем собранные файлы Vue
+      # Если вы хотите, чтобы изменения в коде Vue (для dev) перезагружались,
+      # нужно монтировать и исходники, но для продакшена (собранные файлы) - только dist.
+      # В данном случае, для production-сборки, монтирование dist - самое верное.
+
+    depends_on:
+      - backend

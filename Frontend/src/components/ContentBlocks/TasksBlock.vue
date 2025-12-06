@@ -2,9 +2,7 @@
 
 import {computed, nextTick, onUnmounted, ref, watch} from "vue";
 import QuestsBlock from "../QuestComponents/QuestsBlock.vue";
-import QuestsList from "../QuestComponents/QuestsList.vue";
-import AddingImageButton from "@/components/Design/AddingImageButton.vue";
-//import QuestsList from "@/components/Advanced/QuestsList.vue";
+import AddingImageButton from "../Design/AddingImageButton.vue";
 
 const isMenuOpen = ref(false);
 

@@ -1,12 +1,4 @@
 <template>
-  <!--<svg width="100" height="150" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-        <path
-          d="M 20 10 L 40 10 L 60 80 L 40 80 L 50 140 L 10 50 L 30 50 Z"
-          fill="#FFD700"
-          stroke="#000"
-          stroke-width="2"
-        />
-      </svg>-->
   <svg width="150" height="150" viewBox="0 0 190 120" xmlns="http://www.w3.org/2000/svg">
 
     <g>

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 
 import {computed, ref} from "vue";
-import {decodeHTML5} from "entities";
 
 const props = defineProps<{
   id: string,

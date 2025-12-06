@@ -1,12 +1,24 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import DefaultLayout from "@/layout/DefaultLayout.vue";
-import LoginView from "@/views/LoginView.vue";
-import EmptyLayout from "@/layout/EmptyLayout.vue";
-import RegisterView from "@/views/RegisterView.vue";
-import ContentView from "@/views/ContentView.vue";
-import ContentLayout from "@/layout/ContentLayout.vue";
-import ArchiveView from "@/views/ArchiveView.vue";
+import DefaultLayout from "../layout/DefaultLayout.vue";
+import LoginView from "../views/LoginView.vue";
+import EmptyLayout from "../layout/EmptyLayout.vue";
+import RegisterView from "../views/RegisterView.vue";
+import ContentView from "../views/ContentView.vue";
+import ContentLayout from "../layout/ContentLayout.vue";
+import ArchiveView from "../views/ArchiveView.vue";
+import {Component} from "vue";
+
+/*declare module 'vue-router' {
+  interface RouteMeta {
+    // Каждый объект роута может иметь свой объект meta
+    // Добавляем сюда все поля, которые вы ожидаете в meta
+    layout: Component; // Или другой тип для layout
+    title: string;     // Явно указываем, что title - это строка
+    // Другие ваши мета-поля, если есть
+    // requiresAuth?: boolean;
+  }
+}*/
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

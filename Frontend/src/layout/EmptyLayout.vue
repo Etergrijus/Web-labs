@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {onMounted, onBeforeUnmount, nextTick, provide} from "vue";
+import {onMounted, onBeforeUnmount} from "vue";
 
 onMounted(() => {
   const appElement = document.getElementById('app')

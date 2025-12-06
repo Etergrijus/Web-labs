@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import {Quest} from "../ContentBlocks/TasksBlock.vue"
-import {computed, nextTick, ref, shallowRef, watch} from "vue";
-import SimpleImageButton from "@/components/Design/SimpleImageButton.vue";
-import TaskDialog from "@/components/TaskComponent/TaskDialog.vue";
+import {computed, DefineComponent, ref, watch} from "vue";
+import SimpleImageButton from "../Design/SimpleImageButton.vue";
 import SimpleTask from "../TaskComponent/SimpleTask.vue";
-import CycleTask from "@/components/TaskComponent/CycleTask.vue";
-import DeadlineTask from "@/components/TaskComponent/DeadlineTask.vue";
-import MonotonousTask from "@/components/TaskComponent/MonotonousTask.vue";
+import CycleTask from "../TaskComponent/CycleTask.vue";
+import DeadlineTask from "../TaskComponent/DeadlineTask.vue";
+import MonotonousTask from "../TaskComponent/MonotonousTask.vue";
 
 const props = defineProps<{
   quest: Quest,
@@ -53,8 +52,10 @@ const componentNamesMap = {
   [TaskTypes.DEADLINE]: DeadlineTask,
   [TaskTypes.MONOTONOUS]: MonotonousTask
 };
-const addTask = (taskType: string /*| undefined*/) => {
-  let componentName: HTMLElement;
+const addTask = (taskType: string) => {
+  //Смешная херня, чтобы TypeScript не ругался
+  //Ужас-ужас, зато будет билдиться
+  let componentName: DefineComponent<any, any, any, any, any, any, any, any, any, any, any> | undefined;
   let defaultTaskData: any;
 
   switch (taskType) {

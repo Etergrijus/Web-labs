@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import CharBlock from "@/components/ContentBlocks/CharBlock.vue";
-import TasksBlock from "@/components/ContentBlocks/TasksBlock.vue";
+import CharBlock from "../components/ContentBlocks/CharBlock.vue";
+import TasksBlock from "../components/ContentBlocks/TasksBlock.vue";
 
 </script>
 
