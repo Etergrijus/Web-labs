@@ -2,6 +2,7 @@ from flask import Flask
 from flask_cors import CORS
 
 from Auth.Register import register_user
+from Auth.login import login_user
 from config import config
 
 app = Flask(__name__)
@@ -18,6 +19,11 @@ def hello():
 @app.route('/register', methods=['POST'])
 def register_endpoint():
     return register_user()
+
+
+@app.route('/login', methods=['POST'])
+def login_endpoint():
+    return login_user()
 
 
 if __name__ == '__main__':

@@ -3,7 +3,10 @@ from peewee import Model, BigAutoField, CharField, TextField, IntegerField, Chec
 # from Backend.database_conn import db
 
 # for Docker run
-from database_conn import db
+try:
+    from ..database_conn import db
+except ImportError as e:
+    from database_conn import db
 
 
 class BaseModel(Model):

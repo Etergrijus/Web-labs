@@ -5,8 +5,11 @@ from peewee import IntegrityError, DataError
 # from Backend.models.models import User
 
 # for Docker run
-from models.models import User, Character
-from database_conn import db
+try:
+    from ..models.models import User, Character
+except ImportError as e:
+    from models.models import User, Character
+# from database_conn import db
 from werkzeug.security import generate_password_hash
 
 
