@@ -47,3 +47,19 @@ services:
 
     depends_on:
       - backend
+
+  postgres:
+    image: postgres:16
+    container_name: db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: 'bggg902080'
+      POSTGRES_DB: 'web_labs_db'
+      POSTGRES_USER: 'postgres'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
+    driver: local
