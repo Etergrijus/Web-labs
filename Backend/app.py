@@ -1,8 +1,8 @@
 from flask import Flask
 from flask_cors import CORS
 
-from Auth.Register import register_user
-from Auth.login import login_user
+from Controllers.Auth.Register import register_user
+from Controllers.Auth.Login import login_user
 from config import config
 
 app = Flask(__name__)

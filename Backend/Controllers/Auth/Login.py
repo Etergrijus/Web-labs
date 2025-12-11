@@ -2,9 +2,9 @@ from flask import request, jsonify
 from peewee import IntegrityError, DataError
 
 try:
-    from ..models.models import User, Character
+    from Backend.Models.models import User, Character
 except ImportError as e:
-    from models.models import User, Character
+    from Models.models import User, Character
 from werkzeug.security import check_password_hash
 
 

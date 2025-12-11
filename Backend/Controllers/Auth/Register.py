@@ -2,14 +2,19 @@ from flask import request, jsonify
 from peewee import IntegrityError, DataError
 
 # for local run
-# from Backend.models.models import User
+# from Backend.Models.Models import User
 
 # for Docker run
 try:
-    from ..models.models import User, Character
+    from Backend.Models.models import User, Character
 except ImportError as e:
-    from models.models import User, Character
-# from database_conn import db
+    from Models.models import User, Character
+
+try:
+    from Backend.database_conn import db
+except ImportError as e:
+    from database_conn import db
+
 from werkzeug.security import generate_password_hash
 
 
@@ -30,22 +35,23 @@ def register_user():
         return jsonify({'error': 'Password too short'}), 400
 
     try:
-        user = User.create(
-            username=username,
-            password=generate_password_hash(password)
-        )
+        with db.get_database().atomic():
+            user = User.create(
+                username=username,
+                password=generate_password_hash(password)
+            )
 
-        character = Character.create(
-            char_name=char_name,
-            user=user
-        )
+            character = Character.create(
+                char_name=char_name,
+                user=user
+            )
 
-        return jsonify({
-            'message': 'User registered successfully',
-            'user_id': user.id,
-            'username': user.username,
-            'char_name': character.char_name
-        }), 201
+            return jsonify({
+                'message': 'User registered successfully',
+                'user_id': user.id,
+                'username': user.username,
+                'char_name': character.char_name
+            }), 201
 
     except IntegrityError as e:
         print(str(e))
