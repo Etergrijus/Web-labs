@@ -17,14 +17,7 @@ except ImportError as e:
     from Repository.CharacterRepository import *
 
 
-
-
-
 class AuthService:
-    # def __init__(self):
-    #     self._user_repo = UserRepository()
-    #     self._char_repo = CharacterRepository()
-
     @staticmethod
     def validate(data):
         if not data:
@@ -75,7 +68,7 @@ class AuthService:
         if not user:
             return jsonify({'error': 'User not found'}), 404
 
-        if UserRepository.check_passwod(user, password):
+        if UserRepository.check_password(user, password):
             return jsonify({'message': 'User authorized successfully',
                             'username': user.username}), 200
         else:

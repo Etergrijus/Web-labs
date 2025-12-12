@@ -15,20 +15,22 @@ except ImportError as e:
     from database_conn import db
 
 
-class BaseModel(Model):
-    class Meta:
-        database = db.get_database()
-
-
 class QuestType(Enum):
-    MAIN = 'Main',
+    MAIN = 'Main'
     SIDE = 'Side'
 
 
 class QuestStatus(Enum):
-    IN_PROGRESS = 'In progress',
-    FAILED = 'Failed',
+    IN_PROGRESS = 'In progress'
+    FAILED = 'Failed'
     SUCCESSFUL = 'Successful'
+
+
+class TaskType(Enum):
+    SIMPLE = 'Simple'
+    CYCLE = 'Cycle'
+    DEADLINE = 'Deadline'
+    MONOTONOUS = 'Monotonous'
 
 
 class TimeMeasureUnits(Enum):
@@ -38,6 +40,11 @@ class TimeMeasureUnits(Enum):
     WEEK = 'week'
     MONTH = 'month'
     YEAR = 'year'
+
+
+class BaseModel(Model):
+    class Meta:
+        database = db.get_database()
 
 
 class User(BaseModel):
@@ -56,7 +63,7 @@ class Character(BaseModel):
     heart_value = IntegerField(constraints=[Check('heart_value >= 0'), SQL('DEFAULT 0')])
     bolt_value = IntegerField(constraints=[Check('bolt_value >= 0'), SQL('DEFAULT 0')])
     star_value = IntegerField(constraints=[Check('star_value >= 0'), SQL('DEFAULT 0')])
-    gear_wheel_value = IntegerField(constraints=[Check('gear_wheel_value >= 0'), SQL('DEFAULT 0')]),
+    gear_wheel_value = IntegerField(constraints=[Check('gear_wheel_value >= 0'), SQL('DEFAULT 0')])
     user = ForeignKeyField(User, on_delete='CASCADE', unique=True, backref='character')
 
     class Meta:
@@ -78,7 +85,7 @@ class Quest(BaseModel):
 class Task(BaseModel):
     id = BigAutoField(primary_key=True)
     title = TextField(null=False)
-    type = CharField(choices=[(e.value, e.name) for e in QuestType], null=False)
+    type = CharField(choices=[(e.value, e.name) for e in TaskType], null=False)
     status = BooleanField(null=False, default=False)
     quest = ForeignKeyField(Quest, backref='tasks', on_delete='CASCADE')
 

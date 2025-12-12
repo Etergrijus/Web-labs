@@ -20,5 +20,5 @@ class UserRepository:
         return User.select().where(User.username == username).first()
 
     @staticmethod
-    def check_passwod(user, password):
+    def check_password(user, password):
         return check_password_hash(user.password, password)
