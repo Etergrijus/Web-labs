@@ -56,6 +56,17 @@ class ContentService:
                         'needful_count': task['cycle_needful_count'],
                         'done_count': task['cycle_done_count']
                     }
+                elif task_dict['type'] == TaskType.DEADLINE.value:
+                    task_dict['task_data'] = {
+                        'deadline_date': task['deadline_date']
+                    }
+                elif task_dict['type'] == TaskType.MONOTONOUS.value:
+                    task_dict['task_data'] = {
+                        'needful_count': task['mt_needful_count'],
+                        'done_count': task['mt_done_count'],
+                        'period_value': task['period_value'],
+                        'period_measure_unit': task['period_measure_unit']
+                    }
 
                 quest_dict['tasks'].append(task_dict)
             character_data['quests'].append(quest_dict)

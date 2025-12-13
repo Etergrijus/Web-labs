@@ -4,6 +4,7 @@ from flask_cors import CORS
 from Controllers.QuestController import QuestController
 from Controllers.AuthController import AuthController
 from Controllers.ContentController import ContentController
+from Controllers.TaskController import TaskController
 from config import config
 
 app = Flask(__name__)
@@ -43,6 +44,17 @@ def quest_rud_endpoint(quest_id):
         return QuestController.delete_quest(quest_id)
     elif request.method == 'PATCH':
         return QuestController.update_title_in_quest(quest_id)
+
+
+@app.route('/task', methods=['POST'])
+def create_task_endpoint():
+    return TaskController.add_task()
+
+
+@app.route('/task/<int:task_id>', methods=['PATCH', 'DELETE'])
+def task_ud_endpoint(task_id):
+    if request.method == 'DELETE':
+        return TaskController.delete_task(task_id)
 
 
 if __name__ == '__main__':

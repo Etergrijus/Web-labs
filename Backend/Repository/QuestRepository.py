@@ -20,7 +20,7 @@ class QuestRepository:
         return Quest.get(quest_id)
 
     @staticmethod
-    def add_quest(title, quest_type, char_id):
+    def create_quest(title, quest_type, char_id):
         quest = Quest.create(
             title=title,
             type=quest_type,

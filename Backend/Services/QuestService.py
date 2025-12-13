@@ -1,5 +1,5 @@
 from flask import jsonify
-from peewee import IntegrityError
+from peewee import IntegrityError, DataError
 
 try:
     from Backend.database_conn import db
@@ -20,12 +20,12 @@ except ImportError as e:
 
 class QuestService:
     @staticmethod
-    def create_quest(title, quest_type, char_id):
+    def add_quest(title, quest_type, char_id):
         if not all([title, quest_type, char_id]):
             return jsonify({'error': 'Missing required fields'}), 400
         try:
             with db.get_database().atomic():
-                quest = QuestRepository.add_quest(title, quest_type, char_id)
+                quest = QuestRepository.create_quest(title, quest_type, char_id)
                 return jsonify({
                     'message': 'Quest add successfully',
                     'id': quest.id,
@@ -34,7 +34,10 @@ class QuestService:
                     'status': quest.status,
                     'char-id': quest.character_id
                 }), 201
-
+        except IntegrityError as e:
+            return jsonify({'error': 'foreign-key failed, incorrect character id'}), 409
+        except DataError as e:
+            return jsonify({'error': 'Unexpected quest type'}), 400
         except Exception as e:
             return jsonify({'error': 'Internal server error'}), 500
 
@@ -63,5 +66,5 @@ class QuestService:
                     }), 200
         except IntegrityError as e:
             return jsonify({'error': 'Null value is unacceptable'}), 409
-        except Exception as e:
+        except Exception as exp:
             return jsonify({'error': 'Internal server error'}), 500
