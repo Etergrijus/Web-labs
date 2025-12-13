@@ -19,11 +19,6 @@ except ImportError as e:
 
 class AuthService:
     @staticmethod
-    def validate(data):
-        if not data:
-            return jsonify({'error': 'No data'}), 400
-
-    @staticmethod
     def register(username, password, char_name):
         if not all([username, password, char_name]):
             return jsonify({'error': 'Missing required fields'}), 400

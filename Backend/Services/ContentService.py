@@ -4,6 +4,14 @@ try:
     from Backend.Repository.CharacterRepository import *
 except ImportError as e:
     from Repository.CharacterRepository import *
+try:
+    from Backend.Repository.QuestRepository import *
+except ImportError as e:
+    from Repository.QuestRepository import *
+try:
+    from Backend.Repository.TaskRepository import *
+except ImportError as e:
+    from Repository.TaskRepository import *
 
 
 class ContentService:
@@ -13,6 +21,7 @@ class ContentService:
         if not character:
             return jsonify({'error': 'there is no corresponding character (and user)'}), 404
         character_data = {
+            'char-id': character.id,
             'char_name': character.char_name,
             'image_url': character.image_url,
             'heart_value': character.heart_value,
@@ -22,7 +31,7 @@ class ContentService:
             'quests': []
         }
 
-        quests_data = CharacterRepository.get_all_quests(char_id)
+        quests_data = QuestRepository.get_all_quests(char_id)
         for quest in quests_data:
             quest_dict = {
                 'id': quest.id,
@@ -32,7 +41,7 @@ class ContentService:
                 'tasks': []
             }
 
-            tasks_data = CharacterRepository.get_quest_tasks(quest.id)
+            tasks_data = TaskRepository.get_quest_tasks(quest.id)
             for task in tasks_data:
                 task_dict = {
                     'id': task['task_id'],

@@ -1,6 +1,7 @@
-from flask import Flask
+from flask import Flask, request
 from flask_cors import CORS
 
+from Controllers.QuestController import QuestController
 from Controllers.AuthController import AuthController
 from Controllers.ContentController import ContentController
 from config import config
@@ -27,8 +28,21 @@ def login_endpoint():
 
 
 @app.route('/character/<int:char_id>', methods=['GET'])
-def fetch_data(char_id):
+def fetch_data_endpoint(char_id):
     return ContentController.show_content(char_id)
+
+
+@app.route('/quest', methods=['POST'])
+def create_quest_endpoint():
+    return QuestController.add_quest()
+
+
+@app.route('/quest/<int:quest_id>', methods=['GET', 'PATCH', 'DELETE'])
+def quest_rud_endpoint(quest_id):
+    if request.method == 'DELETE':
+        return QuestController.delete_quest(quest_id)
+    elif request.method == 'PATCH':
+        return QuestController.update_title_in_quest(quest_id)
 
 
 if __name__ == '__main__':

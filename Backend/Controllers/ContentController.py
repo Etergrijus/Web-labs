@@ -1,5 +1,3 @@
-from flask import request
-
 try:
     from Backend.Services.ContentService import *
 except ImportError as e:
