@@ -30,3 +30,24 @@ class TaskController(Controller):
     @staticmethod
     def delete_task(task_id):
         return TaskService.delete_task(task_id)
+
+    @staticmethod
+    def update_task(task_id):
+        data = request.get_json()
+        error = TaskController._validate(data)
+        if error:
+            return error
+
+        task_title = data.get('title')
+        task_data = data.get('task-data')
+        return TaskService.update_task(task_id, task_title, task_data)
+
+    @staticmethod
+    def update_task_after_action(task_id):
+        data = request.get_json()
+        error = TaskController._validate(data)
+        if error:
+            return error
+
+        task_data = data.get('task-data')
+        return TaskService.task_action(task_id, task_data)

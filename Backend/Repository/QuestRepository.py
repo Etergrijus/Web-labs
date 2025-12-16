@@ -1,7 +1,7 @@
 try:
-    from Backend.Models.models import Quest
+    from Backend.Models.models import Quest, QuestStatus
 except ImportError as e:
-    from Models.models import Quest
+    from Models.models import Quest, QuestStatus
 
 
 class QuestRepository:
@@ -36,4 +36,9 @@ class QuestRepository:
     @staticmethod
     def set_new_quest_title(quest_id, new_title):
         query = Quest.update({Quest.title: new_title}).where(Quest.id == quest_id)
+        query.execute()
+
+    @staticmethod
+    def toggle_quest_status(quest_id, new_status):
+        query = Quest.update({Quest.status: new_status}).where(Quest.id == quest_id)
         query.execute()

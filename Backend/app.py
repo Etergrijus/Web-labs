@@ -55,6 +55,13 @@ def create_task_endpoint():
 def task_ud_endpoint(task_id):
     if request.method == 'DELETE':
         return TaskController.delete_task(task_id)
+    elif request.method == 'PATCH':
+        return TaskController.update_task(task_id)
+
+
+@app.route('/task/<int:task_id>', methods=['POST'])
+def task_action_endpoint(task_id):
+    return TaskController.update_task_after_action(task_id)
 
 
 if __name__ == '__main__':
