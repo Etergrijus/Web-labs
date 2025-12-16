@@ -42,5 +42,5 @@ class QuestController(Controller):
         return QuestService.update_quest(quest_id, new_title)
 
     @staticmethod
-    def remove_quest(quest_id):
+    def complete_quest(quest_id):
         return QuestService.remove_quest(quest_id)

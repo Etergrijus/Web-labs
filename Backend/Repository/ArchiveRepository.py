@@ -19,3 +19,7 @@ class ArchiveRepository:
     @staticmethod
     def get_archive_notice(archive_id):
         return Archive.get(archive_id)
+
+    @staticmethod
+    def get_archive(char_id):
+        return Archive.select().where(Archive.character == char_id)

@@ -5,6 +5,7 @@ from Controllers.QuestController import QuestController
 from Controllers.AuthController import AuthController
 from Controllers.ContentController import ContentController
 from Controllers.TaskController import TaskController
+from Controllers.ArchiveController import ArchiveController
 from config import config
 
 app = Flask(__name__)
@@ -45,7 +46,7 @@ def quest_rud_endpoint(quest_id):
     elif request.method == 'PATCH':
         return QuestController.update_title_in_quest(quest_id)
     elif request.method == 'GET':
-        return QuestController.remove_quest(quest_id)
+        return QuestController.complete_quest(quest_id)
 
 
 @app.route('/task', methods=['POST'])
@@ -64,6 +65,11 @@ def task_ud_endpoint(task_id):
 @app.route('/task/<int:task_id>', methods=['POST'])
 def task_action_endpoint(task_id):
     return TaskController.update_task_after_action(task_id)
+
+
+@app.route('/archive/<int:char_id>', methods=['GET'])
+def show_archive(char_id):
+    return ArchiveController.show_archive(char_id)
 
 
 if __name__ == '__main__':
