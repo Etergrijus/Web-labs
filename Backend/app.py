@@ -44,6 +44,8 @@ def quest_rud_endpoint(quest_id):
         return QuestController.delete_quest(quest_id)
     elif request.method == 'PATCH':
         return QuestController.update_title_in_quest(quest_id)
+    elif request.method == 'GET':
+        return QuestController.remove_quest(quest_id)
 
 
 @app.route('/task', methods=['POST'])

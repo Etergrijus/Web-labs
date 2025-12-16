@@ -1,7 +1,7 @@
 try:
-    from Backend.Models.models import Quest, QuestStatus
+    from Backend.Models.models import Quest, QuestStatus, QuestType
 except ImportError as e:
-    from Models.models import Quest, QuestStatus
+    from Models.models import Quest, QuestStatus, QuestType
 
 
 class QuestRepository:

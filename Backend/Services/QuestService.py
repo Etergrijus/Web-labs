@@ -1,5 +1,6 @@
 from flask import jsonify
 from peewee import IntegrityError, DataError
+from random import randint
 
 try:
     from Backend.database_conn import db
@@ -11,11 +12,15 @@ try:
 except ImportError as e:
     from Repository.QuestRepository import *
 
+try:
+    from Backend.Repository.ArchiveRepository import *
+except ImportError as e:
+    from Repository.ArchiveRepository import *
 
-# try:
-#     from Backend.Repository.TaskRepository import *
-# except ImportError as e:
-#     from Repository.TaskRepository import *
+try:
+    from Backend.Repository.CharacterRepository import *
+except ImportError as e:
+    from Repository.CharacterRepository import *
 
 
 class QuestService:
@@ -63,8 +68,47 @@ class QuestService:
                 return jsonify({
                     'message': 'quest updates successfully',
                     'title': f'{QuestRepository.get_quest(quest_id).title}'
-                    }), 200
+                }), 200
         except IntegrityError as e:
             return jsonify({'error': 'Null value is unacceptable'}), 409
         except Exception as exp:
             return jsonify({'error': 'Internal server error'}), 500
+
+    @staticmethod
+    def remove_quest(quest_id):
+        try:
+            quest = QuestRepository.get_quest(quest_id)
+            if quest.status != QuestStatus.IN_PROGRESS.value:
+                try:
+                    with db.get_database().atomic():
+                        title = quest.title
+                        character_id = quest.character_id
+                        quest_type = quest.type
+                        QuestRepository.delete_quest(quest_id)
+                        QuestService._randomize_attribute(quest_type, character_id)
+                        archive_notice = ArchiveRepository.create_archive_notice(title, character_id)
+
+                        return jsonify({
+                            'message': 'removing to archive',
+                            'archive-id': archive_notice.id,
+                            'datetime': archive_notice.completion_time
+                        })
+                except Exception as e:
+                    return jsonify({'error': f'Error on removing quest {str(e)}'}), 400
+            else:
+                return jsonify({'error': 'Quest is still active'}), 405
+        except Quest.DoesNotExist:
+            return jsonify({'error': 'Quest not found'}), 404
+        except Exception as e:
+            return jsonify({'error': f'Internal server error {str(e)}'}), 500
+
+    @staticmethod
+    def _randomize_attribute(quest_type, char_id):
+        if quest_type == QuestType.MAIN.value:
+            attr1 = randint(1, 4)
+            CharacterRepository.update_attributes(attr1, char_id)
+            attr2 = randint(1, 4)
+            CharacterRepository.update_attributes(attr2, char_id)
+        else:
+            attr = randint(1, 4)
+            CharacterRepository.update_attributes(attr, char_id)

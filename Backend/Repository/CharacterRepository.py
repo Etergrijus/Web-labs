@@ -15,10 +15,26 @@ class CharacterRepository:
 
     @staticmethod
     def get_character_info(char_id: int):
-        # Query должен начинаться с Model.select()
-
-        # Далее вызываем .where() на созданном запросе
         return Character.select().where(Character.id == char_id).first()
+
+    @staticmethod
+    def update_attributes(attr, char_id):
+        field = None
+        match attr:
+            case 1:
+                field = Character.heart_value
+            case 2:
+                field = Character.bolt_value
+            case 3:
+                field = Character.star_value
+            case 4:
+                field = Character.gear_wheel_value
+
+        char = Character.select(field).where(Character.id == char_id).first()
+        attr_value = getattr(char, field.name)
+        attr_value += 1
+        query = Character.update({field: attr_value}).where(Character.id == char_id)
+        query.execute()
 
     # @staticmethod
     # def get_all_quests_super():

@@ -47,6 +47,7 @@ class TaskService:
                     }
 
                 QuestRepository.toggle_quest_status(quest_id, QuestStatus.IN_PROGRESS.value)
+                quest = QuestRepository.get_quest(int(quest_id))
                 return jsonify({
                     'message': 'Task created successfully',
                     'id': task.id,
@@ -54,12 +55,13 @@ class TaskService:
                     'type': task.type,
                     'status': task.status,
                     'quest-id': task.quest_id,
-                    'task-data': f'{task_data}'
+                    'task-data': task_data,
+                    'quest-status': quest.status
                 }), 201
         except IntegrityError as e:
             return jsonify({'error': 'foreign-key failed, incorrect quest id'}), 409
         except DataError as e:
-            return jsonify({'error': 'Unexpected task type'}), 400
+            return jsonify({'error': f'Unexpected task type {str(e)}'}), 400
         except Exception as e:
             return jsonify({'error': 'Internal server error'}), 500
 
@@ -73,7 +75,7 @@ class TaskService:
 
                 if TaskService._check_quest_status(quest_id):
                     QuestRepository.toggle_quest_status(task.quest_id, QuestStatus.SUCCESSFUL.value)
-                return '', 204
+                return jsonify({'quest-status': f'{QuestRepository.get_quest(task.quest_id).status}'}), 200
         except Task.DoesNotExist:
             return jsonify({'error': 'Task not found'}), 404
         except Exception as e:
