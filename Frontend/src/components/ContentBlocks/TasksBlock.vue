@@ -3,6 +3,11 @@
 import {computed, nextTick, onUnmounted, ref, watch} from "vue";
 import QuestsBlock from "../QuestComponents/QuestsBlock.vue";
 import AddingImageButton from "../Design/AddingImageButton.vue";
+import {Task} from "../QuestComponents/QuestsList.vue";
+
+const props = defineProps<{
+  quests: Quest[],
+}>()
 
 const isMenuOpen = ref(false);
 
@@ -46,20 +51,23 @@ onUnmounted(() => {
 //Интерфейс для квеста
 export interface Quest {
   id: number,
+  status: string,
   type: string,
-  label: string
+  title: string,
+  tasks?: Task[]
 }
 
 const QuestTypes = Object.freeze({
-    MAIN: 'main',
-    SIDE: 'side'
+    MAIN: 'Main',
+    SIDE: 'Side'
   }
 )
 
 let nextID = 1
 //Массив квестов
-const quests = ref<Quest[]>([])
+const quests = computed(() => props.quests)
 const mainQuests = computed<Quest[]>(() => {
+  console.log(quests)
   return quests.value.filter(quest => quest.type === QuestTypes.MAIN);
 });
 const sideQuests = computed<Quest[]>(() => {
@@ -69,8 +77,9 @@ const sideQuests = computed<Quest[]>(() => {
 
 function makeQuest(type: string) {
   return {
-    label: 'Безымянный квест' + nextID,
+    title: 'Безымянный квест' + nextID,
     id: nextID++,
+    status: 'In progress',
     type,
   }
 }

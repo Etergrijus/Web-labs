@@ -24,11 +24,11 @@ const removeQuest_ = () => {
 }
 
 //Объект для задачи
-interface Task {
+export interface Task {
   id: number,
-  quest_id: number,
+  quest_id?: number,
   type: string,
-  name: string,
+  title: string,
   status: boolean,
   component: HTMLElement,
   //Данные, зависящие от типа подзадачи
@@ -36,13 +36,35 @@ interface Task {
 }
 
 const TaskTypes = Object.freeze({
-  SIMPLE: 'simple',
-  CYCLE: 'cycle',
-  DEADLINE: 'deadline',
-  MONOTONOUS: 'monotonous'
+  SIMPLE: 'Simple',
+  CYCLE: 'Cycle',
+  DEADLINE: 'Deadline',
+  MONOTONOUS: 'Monotonous'
 })
 
-const questTasks = ref<Task[]>([])
+function defineComponent(task: Task) {
+  let componentName: DefineComponent<any, any, any, any, any, any, any, any, any, any, any> | undefined;
+  switch (task.type) {
+    case TaskTypes.SIMPLE:
+      componentName = componentNamesMap[TaskTypes.SIMPLE]
+      break;
+    case TaskTypes.CYCLE:
+      componentName = componentNamesMap[TaskTypes.CYCLE]
+      break;
+    case TaskTypes.DEADLINE:
+      componentName = componentNamesMap[TaskTypes.DEADLINE]
+      break;
+    case TaskTypes.MONOTONOUS:
+      componentName = componentNamesMap[TaskTypes.MONOTONOUS]
+      break;
+  }
+  task.component = componentName
+}
+
+const questTasks = computed(() => {
+  props.quest.tasks.forEach(defineComponent)
+
+})
 let nextId = 1
 
 const componentNamesMap = {
@@ -91,7 +113,7 @@ const addTask = (taskType: string) => {
     id: nextId++,
     quest_id: props.quest.id,
     type: taskType,
-    name: 'Что-то эпическое',
+    title: 'Что-то эпическое',
     status: false,
     component: componentName,
     taskTypeData: defaultTaskData
@@ -119,7 +141,7 @@ const removeTask = (id: number) => {
       style="font-size: 32px; margin-bottom: 50px; cursor: text"
       contenteditable="true"
     >
-      {{ quest.label }}
+      {{ quest.title }}
     </label>
 
     <div class="row quest-row">

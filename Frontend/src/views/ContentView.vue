@@ -38,7 +38,11 @@ const getCharacterData = async () => {
     :gear_wheel_value="charData.gear_wheel_value"
     :char_name="charData.char_name"
   />
-  <TasksBlock/>
+  <TasksBlock
+    v-if="charData"
+
+    :quests="charData.quests"
+  />
 </template>
 
 <style scoped>
