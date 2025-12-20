@@ -10,7 +10,6 @@ import MonotonousTask from "../TaskComponent/MonotonousTask.vue";
 const props = defineProps<{
   quest: Quest,
   index: number,
-  /*onOpenDialog: Function, */// Функция для открытия, приходит из QuestsBlock
   addingTask: string,
   targetId: number,
 }>();
@@ -70,9 +69,11 @@ const addTask = (taskType: string) => {
       componentName = componentNamesMap[TaskTypes.DEADLINE]
       //Сначала создаём эту штуку, которая хранит дату в ISO 8601 с учётом UTC,
       //чтобы не париться над часовыми поясами
-      const milliseconds = Date.UTC(2030, 0, 1, 0, 0, 0)
+/*      const milliseconds = Date.UTC(2030, 0, 1, 0, 0, 0)
       //И делаем из этого дату
-      const date = new Date(milliseconds)
+      const date = new Date(milliseconds)*/
+
+      const date = new Date(2030, 0, 1, 0, 0)
       defaultTaskData = {deadlineDate: date.toJSON()}
       break;
     case TaskTypes.MONOTONOUS:
@@ -104,6 +105,11 @@ watch(() => props.addingTask, () => {
     addTask(props.addingTask)
   }
 })
+
+const removeTask = (id: number) => {
+  questTasks.value.splice(id, 1)
+}
+
 </script>
 
 <template>
@@ -149,10 +155,13 @@ watch(() => props.addingTask, () => {
 
     <div class="task">
       <component
-        v-for="task in questTasks"
+        v-for="(task, index) in questTasks"
         :key="task.id"
         :is="task.component"
         :taskData="task.taskTypeData"
+        :index="index"
+        :id="task.id"
+        @remove="removeTask"
       ></component>
     </div>
   </div>
