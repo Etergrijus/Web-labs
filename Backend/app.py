@@ -11,7 +11,10 @@ from config import config
 app = Flask(__name__)
 app.secret_key = config.API_KEY
 
-CORS(app)
+CORS(app,
+     origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+     supports_credentials=True
+     )
 
 
 @app.route('/')
@@ -27,6 +30,11 @@ def register_endpoint():
 @app.route('/login', methods=['POST'])
 def login_endpoint():
     return AuthController.login()
+
+
+@app.route('/logout', methods=['POST'])
+def logout_endpoint():
+    return AuthController.logout()
 
 
 @app.route('/character/<int:char_id>', methods=['GET'])

@@ -3,7 +3,8 @@ import axios from "axios";
 const baseURL = "http://backend:5000";
 
 const api = axios.create({
-  baseURL: baseURL
+  baseURL: baseURL,
+  withCredentials: true,
 })
 
 if (import.meta.env.DEV && window.location.hostname === 'localhost')

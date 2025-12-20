@@ -37,3 +37,7 @@ class AuthController(Controller):
         username = data.get('username')
         password = data.get('password')
         return AuthService.login(username, password)
+
+    @staticmethod
+    def logout():
+        return AuthService.logout()

@@ -42,7 +42,7 @@ const router = createRouter({
       meta: {layout: EmptyLayout, title: 'Регистрация'}
     },
     {
-      path: '/content',
+      path: '/content/:id',
       name: 'content',
       component: ContentView,
       meta: {layout: ContentLayout, title: 'Мои квесты'}

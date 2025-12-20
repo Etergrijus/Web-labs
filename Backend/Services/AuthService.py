@@ -79,3 +79,12 @@ class AuthService:
                             'char_id': char.id}), 200
         else:
             return jsonify({'error': 'Incorrect Password'}), 401
+
+    @staticmethod
+    def logout():
+        if 'user_id' not in session:
+            return jsonify({'error': 'Not authenticated'}), 401
+        session.clear()
+        return jsonify({
+            'message': 'Logged out successfully'
+        }), 200

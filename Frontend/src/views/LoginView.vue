@@ -118,9 +118,14 @@ const loginRequest = async () => {
       password: password.value,
     })
     console.log("Ответ:", response.data)
+
     const char_id = response.data.char_id
-    console.log(char_id)
-    await router.push('/content');
+    console.log('Полученный char_id:', char_id)
+    await router.push({
+      name: `content`,
+      query: {id: char_id},
+      params: {id: char_id}
+  });
   } catch (error) {
     console.error("Ошибка соединения с бэкендом:", error);
 

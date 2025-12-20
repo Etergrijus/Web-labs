@@ -5,6 +5,14 @@ import {useFileDialog} from "@vueuse/core";
 import AttributeString from "../Advanced/AttributeString.vue";
 import SimpleImageButton from "../Design/SimpleImageButton.vue";
 
+const props = defineProps<{
+  heart_value: number,
+  bolt_value: number,
+  star_value: number,
+  gear_wheel_value: number,
+  char_name: string,
+}>()
+
 const imageSrc = ref('/img/empty_photo.jpg'); // Реактивная переменная для src
 
 const {files, open, reset, onCancel, onChange} = useFileDialog({
@@ -19,13 +27,13 @@ onChange(() => {
   }
 })
 
-const char_name = ref("Тут будет ваше имя")
+const char_name = ref(props.char_name)
 
 //Переменные для характеристик
-const heartValue = ref(0)
-const boltValue = ref(0)
-const starValue = ref(0)
-const gearWheelValue = ref(0)
+const heartValue = ref(props.heart_value)
+const boltValue = ref(props.bolt_value)
+const starValue = ref(props.star_value)
+const gearWheelValue = ref(props.gear_wheel_value)
 
 </script>
 
