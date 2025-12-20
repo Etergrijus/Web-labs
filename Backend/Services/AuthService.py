@@ -1,4 +1,4 @@
-from flask import jsonify
+from flask import jsonify, session
 from peewee import IntegrityError, DataError
 
 try:
@@ -32,11 +32,16 @@ class AuthService:
 
                 character = CharacterRepository.create_character(char_name, user)
 
+                session['user_id'] = user.id
+                session['username'] = user.username
+                session['char_id'] = character.id
+
                 return jsonify({
                     'message': 'User registered successfully',
                     'user_id': user.id,
                     'username': user.username,
-                    'char_name': character.char_name
+                    'char_name': character.char_name,
+                    'char_id': character.id
                 }), 201
 
         except IntegrityError as e:
@@ -64,7 +69,13 @@ class AuthService:
             return jsonify({'error': 'User not found'}), 404
 
         if UserRepository.check_password(user, password):
+            session['user_id'] = user.id
+            session['username'] = user.username
+            char = CharacterRepository.get_character_by_user_id(user.id)
+            session['char_id'] = char.id
+
             return jsonify({'message': 'User authorized successfully',
-                            'username': user.username}), 200
+                            'username': user.username,
+                            'char_id': char.id}), 200
         else:
             return jsonify({'error': 'Incorrect Password'}), 401

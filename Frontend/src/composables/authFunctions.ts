@@ -6,9 +6,6 @@ export const updateTooltipPosition = async (errorVar: boolean, inputRef: HTMLEle
     await nextTick()
 
     const inputRect = inputRef.getBoundingClientRect()
-    console.log(inputRect.top)
-    console.log(inputRect.left)
-    console.log(inputRect.height)
 
     const mediaQuery768 = window.matchMedia('screen and (max-width: 768px)')
     const mediaQuery500 = window.matchMedia('screen and (max-width: 500px)')

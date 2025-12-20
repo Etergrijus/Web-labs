@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { nextTick, onMounted, onUnmounted, ref, watch} from "vue";
+import {nextTick, onMounted, onUnmounted, ref, watch} from "vue";
 import router from "../router";
 import {updateTooltipPosition} from "../composables/authFunctions";
 import AuthBlock from "../components/Advanced/AuthBlock.vue";
+import api from "../services/api"
 
 const login = ref('');
 const password = ref('');
@@ -10,9 +11,13 @@ const password = ref('');
 const loginError = ref(false);
 const passwordError = ref(false);
 
+const loginErrorText = ref("");
+const passwordErrorText = ref("");
+
 const loginKeyUp = async () => {
   loginError.value = login.value.trim().length === 0
   if (loginError.value) {
+    loginErrorText.value = "Введите имя пользователя"
     await nextTick()
     await updateTooltipPosition(loginError.value, loginInputRef.value, loginSpanRef.value)
   }
@@ -21,6 +26,7 @@ const loginKeyUp = async () => {
 const passwordKeyUp = async () => {
   passwordError.value = password.value.trim().length === 0
   if (passwordError.value) {
+    passwordErrorText.value = "Введите пароль"
     await nextTick()
     await updateTooltipPosition(passwordError.value, passwordInputRef.value, passwordSpanRef.value)
   }
@@ -35,20 +41,22 @@ const submitForm = async (event: Event) => {
 
   if (login.value.trim().length === 0) {
     loginError.value = true;
+    loginErrorText.value = "Введите имя пользователя"
     await nextTick()
     await updateTooltipPosition(loginError.value, loginInputRef.value, loginSpanRef.value)
   }
 
   if (password.value.trim().length === 0) {
     passwordError.value = true;
+    passwordErrorText.value = "Введите пароль"
     await nextTick()
     await updateTooltipPosition(passwordError.value, passwordInputRef.value, passwordSpanRef.value)
   }
 
-  if (!(loginError.value || passwordError.value)) {
+/*  if (!(loginError.value || passwordError.value)) {
     await nextTick()
     await router.push('/content');
-  }
+  }*/
 }
 
 const loginInputRef = ref<HTMLElement | null>(null);
@@ -92,6 +100,67 @@ onUnmounted(() => {
     updateTooltipPosition(passwordError.value, passwordInputRef.value, passwordSpanRef.value)
   });
 })
+
+const resetErrors = () => {
+  loginError.value = false
+  passwordError.value = false
+
+  loginErrorText.value = "";
+  passwordErrorText.value = "";
+};
+
+const loginRequest = async () => {
+  resetErrors()
+
+  try {
+    const response = await api.post('/login', {
+      username: login.value,
+      password: password.value,
+    })
+    console.log("Ответ:", response.data)
+    const char_id = response.data.char_id
+    console.log(char_id)
+    await router.push('/content');
+  } catch (error) {
+    console.error("Ошибка соединения с бэкендом:", error);
+
+    if (error.response) {
+      const status = error.response.status;
+      const errorData = error.response.data;
+      const errorMessage = errorData.error;
+
+      switch (status) {
+        case 401:
+          if (errorMessage === "Incorrect Password") {
+            passwordError.value = true
+            passwordErrorText.value = "Неверный пароль"
+          }
+          break;
+        case 404:
+          if (errorMessage === "User not found") {
+            loginError.value = true
+            loginErrorText.value = "Пользователь не найден"
+          }
+        case 400:
+          break;
+        default:
+          // Неожиданный код ошибки
+          loginError.value = true
+          loginErrorText.value = `Ошибка ${status}: Не удалось войти.`;
+          break;
+      }
+    } else if (error.request) {
+      // Запрос был сделан, но ответ не получен (например, CORS, если бы он был проблемой,
+      // или бэкенд был недоступен)
+      loginError.value = true
+      loginErrorText.value = 'Нет ответа от сервера. Проверьте доступность бэкенда.';
+    } else {
+      // Что-то пошло не так при настройке запроса
+      loginError.value = true
+      loginErrorText.value = 'Ошибка при отправке запроса.';
+    }
+  }
+}
 </script>
 
 <template>
@@ -107,7 +176,7 @@ onUnmounted(() => {
         label_text="Имя пользователя:"
         v-model="login"
         :span_show="loginError"
-        span_text="Введите имя пользователя"
+        :span_text="loginErrorText"
         ref="loginAuthBlockRef"
         @input-key-up="loginKeyUp"
       >
@@ -120,7 +189,7 @@ onUnmounted(() => {
         label_text="Пароль:"
         v-model="password"
         :span_show="passwordError"
-        span_text="Введите пароль"
+        :span_text="passwordErrorText"
         ref="passwordAuthBlockRef"
         @input-key-up="passwordKeyUp"
       >
@@ -128,6 +197,7 @@ onUnmounted(() => {
       <button
         type="submit"
         class="default-button"
+        @click="loginRequest"
       >
         Войти
       </button>

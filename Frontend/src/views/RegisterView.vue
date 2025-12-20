@@ -3,6 +3,8 @@ import {nextTick, onMounted, onUnmounted, ref, watch} from "vue";
 import router from "../router";
 import {updateTooltipPosition} from "../composables/authFunctions";
 import AuthBlock from "../components/Advanced/AuthBlock.vue";
+import api from "../services/api"
+
 
 const login = ref('');
 const password = ref('');
@@ -13,6 +15,11 @@ const loginError = ref(false);
 const passwordError = ref(false);
 const checkerPasswordError = ref(false);
 const charNameError = ref(false);
+
+const loginErrorText = ref("");
+const passwordErrorText = ref("");
+const checkerPasswordErrorText = ref("");
+const charNameErrorText = ref("");
 
 const loginInputRef = ref<HTMLElement | null>(null);
 const loginSpanRef = ref<HTMLElement | null>(null);
@@ -48,6 +55,7 @@ const errors = [loginError,
 const loginKeyUp = async () => {
   loginError.value = login.value.trim().length === 0
   if (loginError.value) {
+    loginErrorText.value = "Введите имя пользователя"
     await nextTick()
     await updateTooltipPosition(loginError.value, loginInputRef.value, loginSpanRef.value)
   }
@@ -56,11 +64,13 @@ const loginKeyUp = async () => {
 const passwordKeyUp = async () => {
   passwordError.value = password.value.trim().length === 0
   if (passwordError.value) {
+    passwordErrorText.value = "Введите пароль"
     await nextTick()
     await updateTooltipPosition(passwordError.value, passwordInputRef.value, passwordSpanRef.value)
   }
   checkerPasswordError.value = password.value != checkerPassword.value
   if (checkerPasswordError.value) {
+    checkerPasswordErrorText.value = "Пароли не совпадают"
     await nextTick()
     await updateTooltipPosition(
       checkerPasswordError.value,
@@ -73,6 +83,7 @@ const passwordKeyUp = async () => {
 const checkerPasswordKeyUp = async () => {
   checkerPasswordError.value = checkerPassword.value != password.value
   if (checkerPasswordError.value) {
+    checkerPasswordErrorText.value = "Пароли не совпадают"
     await nextTick()
     await updateTooltipPosition(
       checkerPasswordError.value,
@@ -85,6 +96,7 @@ const checkerPasswordKeyUp = async () => {
 const charNameKeyUp = async () => {
   charNameError.value = charName.value.trim().length === 0
   if (charNameError.value) {
+    charNameErrorText.value = "Введите имя персонажа"
     await nextTick()
     await updateTooltipPosition(
       charNameError.value,
@@ -103,18 +115,21 @@ const submitForm = async (event: Event) => {
 
   if (login.value.trim().length === 0) {
     loginError.value = true;
+    loginErrorText.value = "Введите имя пользователя"
     await nextTick()
     await updateTooltipPosition(loginError.value, loginInputRef.value, loginSpanRef.value)
   }
 
   if (password.value.trim().length === 0) {
     passwordError.value = true;
+    passwordErrorText.value = "Введите пароль"
     await nextTick()
     await updateTooltipPosition(passwordError.value, passwordInputRef.value, passwordSpanRef.value)
   }
 
   if (checkerPassword.value != password.value) {
     checkerPasswordError.value = true;
+    checkerPasswordErrorText.value = "Пароли не совпадают"
     await nextTick()
     await updateTooltipPosition(
       checkerPasswordError.value,
@@ -125,6 +140,7 @@ const submitForm = async (event: Event) => {
 
   if (charName.value.trim().length === 0) {
     charNameError.value = true;
+    charNameErrorText.value = "Введите имя персонажа"
     await nextTick()
     await updateTooltipPosition(charNameError.value, charNameInputRef.value, charNameSpanRef.value)
   }
@@ -135,7 +151,6 @@ const submitForm = async (event: Event) => {
   }
 
   await nextTick()
-  await router.push('/content');
 }
 
 //Рефы на аутх-блоки
@@ -186,6 +201,84 @@ onUnmounted(() => {
     updateTooltipPosition(charNameError.value, charNameInputRef.value, charNameSpanRef.value)
   });
 })
+
+const resetErrors = () => {
+  loginError.value = false
+  passwordError.value = false
+  checkerPasswordError.value = false
+  charNameError.value = false
+
+  loginErrorText.value = "";
+  passwordErrorText.value = "";
+  checkerPasswordErrorText.value = "";
+  charNameErrorText.value = "";
+};
+
+const registerRequest = async () => {
+  resetErrors()
+
+  try {
+    const response = await api.post('/register', {
+      username: login.value,
+      password: password.value,
+      char_name: charName.value
+    })
+    console.log("Ответ:", response.data)
+    await router.push('/content');
+  } catch (error) {
+    console.error("Ошибка соединения с бэкендом:", error);
+
+    if (error.response) {
+      const status = error.response.status;
+      const errorData = error.response.data;
+      const errorMessage = errorData.error;
+
+      switch (status) {
+        case 400:
+          if (errorMessage === 'Password too short') {
+            passwordError.value = true
+            passwordErrorText.value = "Пароль слишком короткий";
+          } else if (errorMessage === 'Username too long') {
+            loginError.value = true
+            loginErrorText.value = "Логин слишком длинный";
+          } else if (errorMessage === 'char_name too long') {
+            charNameError.value = true
+            charNameErrorText.value = "Имя персонажа слишком длинное";
+          }/* else {
+              // Общая ошибка 400 (например, "Missing required fields")
+              loginErrorText.value = errorMessage;*/
+          break;
+        case 409:
+          if (errorMessage === 'User already exists') {
+            loginError.value = true
+            loginErrorText.value = "Такой пользователь уже существует";
+          }
+          break;
+        case 500:
+          // Internal server error
+          loginError.value = true
+          loginErrorText.value = 'Произошла внутренняя ошибка сервера.';
+          break;
+        default:
+          // Неожиданный код ошибки
+          loginError.value = true
+          loginErrorText.value = `Ошибка ${status}: Не удалось зарегистрироваться.`;
+          break;
+      }
+    } else if (error.request) {
+      // Запрос был сделан, но ответ не получен (например, CORS, если бы он был проблемой,
+      // или бэкенд был недоступен)
+      loginError.value = true
+      loginErrorText.value = 'Нет ответа от сервера. Проверьте доступность бэкенда.';
+    } else {
+      // Что-то пошло не так при настройке запроса
+      loginError.value = true
+      loginErrorText.value = 'Ошибка при отправке запроса.';
+    }
+  }
+}
+
+
 </script>
 
 <template>
@@ -205,7 +298,7 @@ onUnmounted(() => {
         label_text="Имя пользователя:"
         v-model="login"
         :span_show="loginError"
-        span_text="Введите имя пользователя"
+        :span_text="loginErrorText"
         ref="loginAuthBlockRef"
         @input-key-up="loginKeyUp"
       >
@@ -217,7 +310,7 @@ onUnmounted(() => {
         label_text="Пароль:"
         v-model="password"
         :span_show="passwordError"
-        span_text="Введите пароль"
+        :span_text="passwordErrorText"
         ref="passwordAuthBlockRef"
         @input-key-up="passwordKeyUp"
       >
@@ -229,7 +322,7 @@ onUnmounted(() => {
         label_text="Подтвердите пароль:"
         v-model="checkerPassword"
         :span_show="checkerPasswordError"
-        span_text="Пароли не совпадают"
+        :span_text="checkerPasswordErrorText"
         ref="checkerPasswordAuthBlockRef"
         @input-key-up="checkerPasswordKeyUp"
       >
@@ -242,7 +335,7 @@ onUnmounted(() => {
         <em><sub> (В диапазоне от вашего ФИО до &quot;Мы, император и самодержец&quot;)</sub></em>`"
         v-model="charName"
         :span_show="charNameError"
-        span_text="Введите имя персонажа"
+        :span_text="charNameErrorText"
         ref="charNameAuthBlockRef"
         @input-key-up="charNameKeyUp"
       >
@@ -251,6 +344,7 @@ onUnmounted(() => {
       <button
         type="submit"
         class="default-button"
+        @click="registerRequest"
       >
         Зарегистрироваться
       </button>

@@ -18,6 +18,10 @@ class CharacterRepository:
         return Character.select().where(Character.id == char_id).first()
 
     @staticmethod
+    def get_character_by_user_id(user_id):
+        return Character.select().where(Character.user == user_id).first()
+
+    @staticmethod
     def update_attributes(attr, char_id):
         field = None
         match attr:

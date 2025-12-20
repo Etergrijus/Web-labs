@@ -19,6 +19,8 @@ onChange(() => {
   }
 })
 
+const char_name = ref("Тут будет ваше имя")
+
 //Переменные для характеристик
 const heartValue = ref(0)
 const boltValue = ref(0)
@@ -29,7 +31,7 @@ const gearWheelValue = ref(0)
 
 <template>
   <div class="char-block">
-    <h1 style="margin-top: 40px">Тут будет ваше имя</h1>
+    <h1 style="margin-top: 40px">{{char_name}}</h1>
     <img :src="imageSrc" width="400px">
     <SimpleImageButton style="margin-top: 30px"
                        button-text="Сменить портрет"
