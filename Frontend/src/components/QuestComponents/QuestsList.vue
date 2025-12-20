@@ -30,9 +30,12 @@ export interface Task {
   type: string,
   title: string,
   status: boolean,
-  component: HTMLElement,
   //Данные, зависящие от типа подзадачи
-  taskTypeData: any
+  task_data: any,
+}
+
+export interface TaskWithComponent extends Task {
+  component: DefineComponent<any, any, any, any, any, any, any, any, any, any, any> | undefined;
 }
 
 const TaskTypes = Object.freeze({
@@ -42,7 +45,7 @@ const TaskTypes = Object.freeze({
   MONOTONOUS: 'Monotonous'
 })
 
-function defineComponent(task: Task) {
+function defineComponent(task: Task): TaskWithComponent {
   let componentName: DefineComponent<any, any, any, any, any, any, any, any, any, any, any> | undefined;
   switch (task.type) {
     case TaskTypes.SIMPLE:
@@ -58,12 +61,16 @@ function defineComponent(task: Task) {
       componentName = componentNamesMap[TaskTypes.MONOTONOUS]
       break;
   }
-  task.component = componentName
+  return {
+    ...task,
+    component: componentName,
+  } as TaskWithComponent
 }
 
 const questTasks = computed(() => {
-  props.quest.tasks.forEach(defineComponent)
-
+  const tasks = props.quest.tasks.map(defineComponent)
+  console.log("Задачи:", tasks)
+  return tasks
 })
 let nextId = 1
 
@@ -116,7 +123,7 @@ const addTask = (taskType: string) => {
     title: 'Что-то эпическое',
     status: false,
     component: componentName,
-    taskTypeData: defaultTaskData
+    task_data: defaultTaskData
   }
 
   questTasks.value.push(newTask)
@@ -180,9 +187,10 @@ const removeTask = (id: number) => {
         v-for="(task, index) in questTasks"
         :key="task.id"
         :is="task.component"
-        :taskData="task.taskTypeData"
+        :taskData="task.task_data"
         :index="index"
         :id="task.id"
+        :title="task.title"
         @remove="removeTask"
       ></component>
     </div>

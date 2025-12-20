@@ -6,6 +6,7 @@ import {ref} from "vue";
 const props = defineProps<{
   index: number,
   id: number,
+  title: string,
 }>()
 
 const emit = defineEmits(['remove'])
@@ -15,7 +16,7 @@ const handleRemove = () => {
 }
 
 const editButtonText = ref("Редактировать")
-const taskTitle = ref("Что-то эпическое")
+const taskTitle = ref(props.title)
 const isEdit = ref(false)
 
 const editing = () => {

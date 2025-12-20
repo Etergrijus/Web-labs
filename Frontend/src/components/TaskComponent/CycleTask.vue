@@ -4,14 +4,15 @@ import SimpleImageButton from "../Design/SimpleImageButton.vue";
 import {onMounted, ref} from "vue";
 
 interface CycleTaskData {
-  needfulCount: number,
-  doneCount: number,
+  needful_count: number,
+  done_count: number,
 }
 
 const props = defineProps<{
   taskData: CycleTaskData,
   index: number,
   id: number,
+  title: string,
 }>()
 
 const emit = defineEmits(['remove'])
@@ -20,11 +21,11 @@ const handleRemove = () => {
   emit('remove', props.index)
 }
 
-const needful = ref(props.taskData.needfulCount)
-const done = ref(props.taskData.doneCount)
+const needful = ref(props.taskData.needful_count)
+const done = ref(props.taskData.done_count)
 
 const editButtonText = ref("Редактировать")
-const taskTitle = ref("Что-то эпическое")
+const taskTitle = ref(props.title)
 const isEdit = ref(false)
 const editing = () => {
   const titleLabel = document.getElementById('task_title' + props.id)

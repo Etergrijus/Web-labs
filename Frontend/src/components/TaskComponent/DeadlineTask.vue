@@ -4,13 +4,14 @@ import SimpleImageButton from "../Design/SimpleImageButton.vue";
 import {computed, ref} from "vue";
 
 interface DeadlineData {
-  deadlineDate: string
+  deadline_date: string
 }
 
 const props = defineProps<{
   taskData: DeadlineData
   index: number,
   id: number,
+  title: string,
 }>()
 
 const emit = defineEmits(['remove'])
@@ -25,7 +26,7 @@ const now = computed(() => {
   return date.toISOString().slice(0, 16)
 })
 
-const deadlineDate = ref(props.taskData.deadlineDate)
+const deadlineDate = ref(props.taskData.deadline_date)
 
 const formattedDateForInput = computed(() => {
   if (!deadlineDate.value) return '';
@@ -52,7 +53,7 @@ const localeDeadlineDate = computed(() => {
 })
 
 const editButtonText = ref("Редактировать")
-const taskTitle = ref("Что-то эпическое")
+const taskTitle = ref(props.title)
 const isEdit = ref(false)
 const editing = () => {
   const titleLabel = document.getElementById('task_title' + props.id)

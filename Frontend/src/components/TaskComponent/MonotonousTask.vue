@@ -4,16 +4,17 @@ import SimpleImageButton from "../Design/SimpleImageButton.vue";
 import {computed, ref} from "vue";
 
 interface MonotonousTaskData {
-  needfulCount: number,
-  doneCount: number,
-  periodValue: number,
-  periodMeasureUnit: string
+  needful_count: number,
+  done_count: number,
+  period_value: number,
+  period_measure_unit: string
 }
 
 const props = defineProps<{
   taskData: MonotonousTaskData
   index: number,
   id: number,
+  title: string,
 }>()
 
 const emit = defineEmits(['remove'])
@@ -22,13 +23,13 @@ const handleRemove = () => {
   emit('remove', props.index)
 }
 
-const needful = ref(props.taskData.needfulCount)
-const done = ref(props.taskData.doneCount)
-const periodValue = ref(props.taskData.periodValue)
-const periodMeasureUnit = ref(props.taskData.periodMeasureUnit)
+const needful = ref(props.taskData.needful_count)
+const done = ref(props.taskData.done_count)
+const periodValue = ref(props.taskData.period_value)
+const periodMeasureUnit = ref(props.taskData.period_measure_unit)
 
 const editButtonText = ref("Редактировать")
-const taskTitle = ref("Что-то эпическое")
+const taskTitle = ref(props.title)
 const isEdit = ref(false)
 const editing = () => {
   const titleLabel = document.getElementById('task_title' + props.id)
