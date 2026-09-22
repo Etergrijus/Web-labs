@@ -224,7 +224,14 @@ const registerRequest = async () => {
       char_name: charName.value
     })
     console.log("Ответ:", response.data)
-    await router.push('/content');
+    //await router.push('/content');
+    const char_id = response.data.char_id
+    console.log('Полученный char_id:', char_id)
+    await router.push({
+      name: `content`,
+      query: {id: char_id},
+      params: {id: char_id}
+  });
   } catch (error) {
     console.error("Ошибка соединения с бэкендом:", error);
 

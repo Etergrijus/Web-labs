@@ -24,7 +24,7 @@ class QuestController(Controller):
 
         title = data.get('title')
         quest_type = data.get('type')
-        char_id = data.get('char-id')
+        char_id = data.get('char_id')
         return QuestService.add_quest(title, quest_type, char_id)
 
     @staticmethod

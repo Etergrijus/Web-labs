@@ -11,9 +11,9 @@ const props = defineProps<{
   quests_array: Array<Quest>,
   isListOpen: Boolean,
   //Свойство для корректировки индекса для побочных квестов
-  //Лучше так, чем всё перекапывать
-  //MainQuestAdjustment = 0
-  //SideQuestAdjustment = mainQuest.length
+  //Лучше так, чем всё перекапывать.
+  //Примем MainQuestAdjustment = 0,
+  //Тогда SideQuestAdjustment = mainQuest.length
   indexAdjustment: number
 }>();
 

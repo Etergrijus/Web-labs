@@ -27,7 +27,7 @@ class QuestService:
     @staticmethod
     def add_quest(title, quest_type, char_id):
         if not all([title, quest_type, char_id]):
-            return jsonify({'error': 'Missing required fields'}), 400
+            return jsonify({'error': f'Missing required fields, ${title} ${quest_type} ${char_id}'}), 400
         try:
             with db.get_database().atomic():
                 quest = QuestRepository.create_quest(title, quest_type, char_id)
@@ -37,7 +37,7 @@ class QuestService:
                     'title': quest.title,
                     'type': quest.type,
                     'status': quest.status,
-                    'char-id': quest.character_id
+                    'char_id': quest.character_id
                 }), 201
         except IntegrityError as e:
             return jsonify({'error': 'foreign-key failed, incorrect character id'}), 409

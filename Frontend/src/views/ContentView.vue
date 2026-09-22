@@ -40,8 +40,8 @@ const getCharacterData = async () => {
   />
   <TasksBlock
     v-if="charData"
-
     :quests="charData.quests"
+    @fetch="getCharacterData"
   />
 </template>
 

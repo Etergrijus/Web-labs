@@ -4,10 +4,17 @@ import {computed, nextTick, onUnmounted, ref, watch} from "vue";
 import QuestsBlock from "../QuestComponents/QuestsBlock.vue";
 import AddingImageButton from "../Design/AddingImageButton.vue";
 import {Task} from "../QuestComponents/QuestsList.vue";
+import api from "../../services/api"
+import {useRoute} from "vue-router";
+
+const route = useRoute()
+const char_id = route.query.id;
 
 const props = defineProps<{
   quests: Quest[],
 }>()
+
+const emit = defineEmits(['fetch'])
 
 const isMenuOpen = ref(false);
 
@@ -84,7 +91,7 @@ function makeQuest(type: string) {
   }
 }
 
-//Добавляет новый главный квест в массив квестов.
+/*//Добавляет новый главный квест в массив квестов.
 //Вставку осуществляет перед первым сайд-квестом, либо в конце массива, если
 //сайд-квестов нет.
 //Закрывает меню добавления.
@@ -105,9 +112,80 @@ const addSideQuest = () => {
   isMenuOpen.value = false
 }
 
+function makeInterfaceQuest(type: string, title: string, id: number) {
+  return {
+    title,
+    id,
+    status: 'In progress',
+    type,
+    task: []
+  }
+}*/
+
+const addQuest = async (type: string) => {
+  try {
+    console.log(char_id, "Безымянный квест" + nextID++, type)
+    const response = await api.post('/quest', {
+      title: "Безымянный квест" + nextID,
+      type: type,
+      char_id: Number(char_id)
+    })
+
+    emit('fetch')
+    isMenuOpen.value = false
+  } catch (error) {
+    if (error.response) {
+
+      const status = error.response.status
+      const errorData = error.response.data;
+      const errorMessage = errorData.error;
+
+      switch (status) {
+        case 409:
+          if (errorMessage === "foreign-key failed, incorrect character id") {
+            console.log("Ошибка: неверный ID персонажа, попытка добавить квест не себе")
+          }
+          break;
+        case 400:
+          if (errorMessage === "Unexpected quest type")
+            console.log("Ошибка: неожиданный тип квеста")
+      }
+    } else if (error.request) {
+      console.log('Нет ответа от сервера. Проверьте доступность бэкенда.');
+    } else {
+      console.log('Ошибка при отправке запроса.');
+    }
+  }
+}
+
 //Удаляет квест из массива.
-const removeQuest = (index: number) => {
-  quests.value.splice(index, 1);
+const removeQuest = async (index: number) => {
+  try {
+    console.log("Deleting quest with index " + index)
+    const response = await api.delete('/quest/' + quests.value[index].id)
+    emit('fetch')
+  } catch (error) {
+    if (error.response) {
+      const status = error.response.status
+      const errorData = error.response.data;
+      const errorMessage = errorData.error;
+
+      switch (status) {
+        case 409:
+          if (errorMessage === "foreign-key failed, incorrect character id") {
+            console.log("Ошибка: неверный ID персонажа, попытка удалить квест не для себя")
+          }
+          break;
+        case 400:
+          if (errorMessage === "Unexpected quest type")
+            console.log("Ошибка: неожиданный тип квеста")
+      }
+    } else if (error.request) {
+      console.log('Нет ответа от сервера. Проверьте доступность бэкенда.');
+    } else {
+      console.log('Ошибка при отправке запроса ' + error);
+    }
+  }
 }
 
 //Для сворачивания/разворачивания блоков
@@ -148,7 +226,7 @@ const toggleSideQuests = () => {
         class="add-button"
         style="color: #ff6800"
         id="main-quest-button"
-        @click="addMainQuest"
+        @click="addQuest(QuestTypes.MAIN)"
       >
         Основной квест
       </button>
@@ -157,7 +235,7 @@ const toggleSideQuests = () => {
         class="add-button"
         style="color: #008000"
         id="sub-quest-button"
-        @click="addSideQuest"
+        @click="addQuest(QuestTypes.SIDE)"
       >
         Побочный квест
       </button>

@@ -39,9 +39,9 @@ const gearWheelValue = ref(props.gear_wheel_value)
 
 <template>
   <div class="char-block">
-    <h1 style="margin-top: 40px">{{char_name}}</h1>
+    <h1 style="margin-top: 40px; color: #ff2400">{{char_name}}</h1>
     <img :src="imageSrc" width="400px">
-    <SimpleImageButton style="margin-top: 30px"
+    <SimpleImageButton style="margin-top: 30px; border: 2px #ff2400 solid; border-radius: 5px"
                        button-text="Сменить портрет"
                        image-url="img/canvas.png"
                        @click="open"
