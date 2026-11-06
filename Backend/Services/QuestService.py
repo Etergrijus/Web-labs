@@ -22,6 +22,11 @@ try:
 except ImportError as e:
     from Repository.CharacterRepository import *
 
+try:
+    from Backend.Repository.TaskRepository import *
+except ImportError as e:
+    from Repository.TaskRepository import *
+
 
 class QuestService:
     @staticmethod
@@ -101,6 +106,42 @@ class QuestService:
             return jsonify({'error': 'Quest not found'}), 404
         except Exception as e:
             return jsonify({'error': f'Internal server error {str(e)}'}), 500
+
+    @staticmethod
+    def get_tasks(quest_id):
+        quest_tasks = {
+            'tasks': []
+        }
+
+        tasks_data = TaskRepository.get_quest_tasks(quest_id)
+        for task in tasks_data:
+            task_dict = {
+                'id': task['task_id'],
+                'title': task['task_title'],
+                'type': task['task_type'],
+                'status': task['task_status'],
+                'task_data': {}
+            }
+
+            if task_dict['type'] == TaskType.CYCLE.value:
+                task_dict['task_data'] = {
+                    'needful_count': task['cycle_needful_count'],
+                    'done_count': task['cycle_done_count']
+                }
+            elif task_dict['type'] == TaskType.DEADLINE.value:
+                task_dict['task_data'] = {
+                    'deadline_date': task['deadline_date']
+                }
+            elif task_dict['type'] == TaskType.MONOTONOUS.value:
+                task_dict['task_data'] = {
+                    'needful_count': task['mt_needful_count'],
+                    'done_count': task['mt_done_count'],
+                    'period_value': task['period_value'],
+                    'period_measure_unit': task['period_measure_unit']
+                }
+
+            quest_tasks['tasks'].append(task_dict)
+        return jsonify(quest_tasks), 200
 
     @staticmethod
     def _randomize_attribute(quest_type, char_id):

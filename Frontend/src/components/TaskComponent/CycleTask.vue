@@ -2,6 +2,7 @@
 
 import SimpleImageButton from "../Design/SimpleImageButton.vue";
 import {onMounted, ref} from "vue";
+import {editing} from "@/composables/tasksFunctions";
 
 interface CycleTaskData {
   needful_count: number,
@@ -24,41 +25,31 @@ const handleRemove = () => {
 const needful = ref(props.taskData.needful_count)
 const done = ref(props.taskData.done_count)
 
-const editButtonText = ref("Редактировать")
 const taskTitle = ref(props.title)
-const isEdit = ref(false)
-const editing = () => {
-  const titleLabel = document.getElementById('task_title' + props.id)
-  if (isEdit.value === false) {
-    editButtonText.value = "Сохранить"
-    isEdit.value = true
-    titleLabel.contentEditable = String(true);
-  } else if (isEdit.value === true) {
-    editButtonText.value = "Редактировать"
-    isEdit.value = false
-    titleLabel.contentEditable = String(false);
-  }
+const taskTitleEl = ref<HTMLElement | null> (null)
+
+const {isEdit, editButtonText, toggleEdit } = editing()
+
+const handleEdit = () => {
+  toggleEdit(taskTitleEl.value)
 }
 
-const updateDone = (event) => {
-  done.value = parseInt(event.target.value, 10)
-}
 </script>
 
 <template>
   <div class="row task-style">
-    <div class="column" style="width: 450px">
-      <div class="row" style="align-items: center">
+    <div class="column" style="width: 700px">
+      <div class="row" style="align-items: baseline;">
         <label
           class="task-header-text"
-          :id="'task_title' + id"
+          ref="taskTitleEl"
         >
           {{ taskTitle }}
         </label>
 
         <label
           class="task-header-text in-row-margin"
-          style="color: #ff2400"
+          style="color: var(--my-scarlet)"
           v-if="!isEdit"
         >
           {{ needful }}
@@ -67,6 +58,7 @@ const updateDone = (event) => {
         <input
           v-else
           type="number"
+          style="margin-left: 20px"
           v-model.number="needful"
           :min="1"
           :max="100"
@@ -78,6 +70,7 @@ const updateDone = (event) => {
 
       <input
         type="number"
+        style="color: #eeeeee"
         :min="0"
         :step="1"
         :max="needful"
@@ -97,7 +90,7 @@ const updateDone = (event) => {
         :font_size="36"
         :image_width="250"
         :image_height="100"
-        @click="editing"
+        @click="handleEdit"
       ></SimpleImageButton>
 
       <SimpleImageButton

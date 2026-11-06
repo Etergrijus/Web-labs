@@ -70,9 +70,22 @@ const QuestTypes = Object.freeze({
   }
 )
 
-let nextID = 1
 //Массив квестов
-const quests = computed(() => props.quests)
+const quests = computed(() => {
+  //Сортируем его так, чтобы основные шли в начале, а побочные в конце
+  const mainBuffer = []
+  const sideBuffer = []
+  props.quests.forEach((quest) => {
+    if (quest.type === QuestTypes.MAIN)
+      mainBuffer.push(quest)
+    else
+      sideBuffer.push(quest)
+  })
+
+  const result = []
+  return result.concat(mainBuffer, sideBuffer)
+})
+
 const mainQuests = computed<Quest[]>(() => {
   console.log(quests)
   return quests.value.filter(quest => quest.type === QuestTypes.MAIN);
@@ -81,61 +94,21 @@ const sideQuests = computed<Quest[]>(() => {
   return quests.value.filter(quest => quest.type === QuestTypes.SIDE);
 });
 
-
-function makeQuest(type: string) {
-  return {
-    title: 'Безымянный квест' + nextID,
-    id: nextID++,
-    status: 'In progress',
-    type,
-  }
+//Для сворачивания/разворачивания блоков
+const isMainQuestsListOpen = ref(true);
+const toggleMainQuests = () => {
+  isMainQuestsListOpen.value = !isMainQuestsListOpen.value
+}
+const isSideQuestsListOpen = ref(true);
+const toggleSideQuests = () => {
+  isSideQuestsListOpen.value = !isSideQuestsListOpen.value
 }
 
-/*//Добавляет новый главный квест в массив квестов.
-//Вставку осуществляет перед первым сайд-квестом, либо в конце массива, если
-//сайд-квестов нет.
-//Закрывает меню добавления.
-const addMainQuest = () => {
-  //Ищем первый элемент с типом "side"
-  //Гарантируется, что мы будем хранить сначала главные квесты, а потом сайд-квесты
-  let result = quests.value.findIndex(quest => quest.type === QuestTypes.SIDE)
-  if (result == -1)
-    quests.value.push(makeQuest(QuestTypes.MAIN))
-  else
-    quests.value.splice(result, 0, makeQuest(QuestTypes.MAIN))
+const nextID = ref(quests.value.length)
 
-  isMenuOpen.value = false
-}
 
-const addSideQuest = () => {
-  quests.value.push(makeQuest(QuestTypes.SIDE))
-  isMenuOpen.value = false
-}
-
-function makeInterfaceQuest(type: string, title: string, id: number) {
-  return {
-    title,
-    id,
-    status: 'In progress',
-    type,
-    task: []
-  }
-}*/
-
-const addQuest = async (type: string) => {
-  try {
-    console.log(char_id, "Безымянный квест" + nextID++, type)
-    const response = await api.post('/quest', {
-      title: "Безымянный квест" + nextID,
-      type: type,
-      char_id: Number(char_id)
-    })
-
-    emit('fetch')
-    isMenuOpen.value = false
-  } catch (error) {
-    if (error.response) {
-
+function questExceptionHandle(error: any, action: string) {
+  if (error.response) {
       const status = error.response.status
       const errorData = error.response.data;
       const errorMessage = errorData.error;
@@ -143,7 +116,7 @@ const addQuest = async (type: string) => {
       switch (status) {
         case 409:
           if (errorMessage === "foreign-key failed, incorrect character id") {
-            console.log("Ошибка: неверный ID персонажа, попытка добавить квест не себе")
+            console.log("Ошибка: неверный ID персонажа, попытка" + action +  "квест не себе")
           }
           break;
         case 400:
@@ -155,6 +128,21 @@ const addQuest = async (type: string) => {
     } else {
       console.log('Ошибка при отправке запроса.');
     }
+}
+
+const addQuest = async (type: string) => {
+  try {
+    console.log(char_id, "Безымянный квест" + nextID.value++, type)
+    const response = await api.post('/quest', {
+      title: "Безымянный квест" + nextID.value,
+      type: type,
+      char_id: Number(char_id)
+    })
+
+    emit('fetch')
+    isMenuOpen.value = false
+  } catch (error) {
+      questExceptionHandle(error, "добавить")
   }
 }
 
@@ -165,38 +153,21 @@ const removeQuest = async (index: number) => {
     const response = await api.delete('/quest/' + quests.value[index].id)
     emit('fetch')
   } catch (error) {
-    if (error.response) {
-      const status = error.response.status
-      const errorData = error.response.data;
-      const errorMessage = errorData.error;
-
-      switch (status) {
-        case 409:
-          if (errorMessage === "foreign-key failed, incorrect character id") {
-            console.log("Ошибка: неверный ID персонажа, попытка удалить квест не для себя")
-          }
-          break;
-        case 400:
-          if (errorMessage === "Unexpected quest type")
-            console.log("Ошибка: неожиданный тип квеста")
-      }
-    } else if (error.request) {
-      console.log('Нет ответа от сервера. Проверьте доступность бэкенда.');
-    } else {
-      console.log('Ошибка при отправке запроса ' + error);
-    }
+    questExceptionHandle(error, "удалить")
   }
 }
 
-//Для сворачивания/разворачивания блоков
-const isMainQuestsListOpen = ref(true);
-const toggleMainQuests = () => {
-  isMainQuestsListOpen.value = !isMainQuestsListOpen.value
-  console.log(isMainQuestsListOpen.value)
-}
-const isSideQuestsListOpen = ref(true);
-const toggleSideQuests = () => {
-  isSideQuestsListOpen.value = !isSideQuestsListOpen.value
+//Изменяет название квеста.
+const updateQuest = async (index: number) => {
+  try {
+    console.log("Updating quest with index " + index + ' ' + quests.value[index].title)
+    const response = await api.patch('/quest/' + quests.value[index].id, {
+      new_title: quests.value[index].title
+    })
+    emit('fetch')
+  } catch (error) {
+    questExceptionHandle(error, "изменить")
+  }
 }
 </script>
 
@@ -249,6 +220,7 @@ const toggleSideQuests = () => {
         :index-adjustment="0"
         @removeQuest="removeQuest"
         @toggleList="toggleMainQuests"
+        @updateQuestTitle="updateQuest"
       ></QuestsBlock>
 
       <QuestsBlock
@@ -258,6 +230,7 @@ const toggleSideQuests = () => {
         :index-adjustment="mainQuests.length"
         @removeQuest="removeQuest"
         @toggleList="toggleSideQuests"
+        @updateQuestTitle="updateQuest"
       ></QuestsBlock>
     </div>
 

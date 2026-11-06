@@ -2,6 +2,7 @@
 
 import SimpleImageButton from "../Design/SimpleImageButton.vue";
 import {computed, ref} from "vue";
+import {editing} from "@/composables/tasksFunctions";
 
 interface DeadlineData {
   deadline_date: string
@@ -19,6 +20,15 @@ const emit = defineEmits(['remove'])
 const handleRemove = () => {
   emit('remove', props.index)
 }
+
+const taskTitle = ref(props.title)
+const taskTitleEl = ref<HTMLElement | null> (null)
+const {isEdit, editButtonText, toggleEdit} = editing()
+
+const handleEdit = () => {
+  toggleEdit(taskTitleEl.value)
+}
+
 
 const now = computed(() => {
   const date = new Date();
@@ -52,22 +62,6 @@ const localeDeadlineDate = computed(() => {
   return date.toLocaleString().replace(",", "").slice(0, 16)
 })
 
-const editButtonText = ref("Редактировать")
-const taskTitle = ref(props.title)
-const isEdit = ref(false)
-const editing = () => {
-  const titleLabel = document.getElementById('task_title' + props.id)
-  if (isEdit.value === false) {
-    editButtonText.value = "Сохранить"
-    isEdit.value = true
-    titleLabel.contentEditable = String(true);
-  } else if (isEdit.value === true) {
-    editButtonText.value = "Редактировать"
-    isEdit.value = false
-    titleLabel.contentEditable = String(false);
-  }
-}
-
 const handleDateInput = (event) => {
   const newDate = event.target.value;
   const date = new Date(newDate);
@@ -84,7 +78,7 @@ const handleDateInput = (event) => {
     <div class="column" style="width: 700px">
       <div class="row" style="align-items: baseline">
         <label
-          :id="'task_title' + id"
+          ref="taskTitleEl"
           class="task-header-text"
         >
           {{ taskTitle }}
@@ -105,7 +99,7 @@ const handleDateInput = (event) => {
           type="datetime-local"
           :min="now"
           :value="formattedDateForInput"
-          style="color: #ff2400"
+
           @input="handleDateInput"
           @keydown.prevent
         >
@@ -122,7 +116,7 @@ const handleDateInput = (event) => {
         :font_size="36"
         :image_width="250"
         :image_height="100"
-        @click="editing"
+        @click="handleEdit"
       ></SimpleImageButton>
 
       <SimpleImageButton

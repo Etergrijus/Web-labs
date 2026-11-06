@@ -9,7 +9,7 @@ services:
        # Указывает, где находится Dockerfile и исходный код. '.' означает текущую директорию (backend/)
       context: ./Backend
       # Имя файла с инструкциями по сборке
-      dockerfile: Dockerfile
+      dockerfile: Backend/dockerfile
 
     container_name: flask_backend
     # Порты, которые будут проброшены.
@@ -32,18 +32,19 @@ services:
   frontend:
     build:
       context: ./Frontend
-      dockerfile: Dockerfile.frontend
+      dockerfile: dockerfile
 
     container_name: vue_frontend
 
     ports:
-      - "5173:80"
+      - "5173:5173"
 
     volumes:
-      - ./frontend/dist:/usr/share/nginx/html # Монтируем собранные файлы Vue
-      # Если вы хотите, чтобы изменения в коде Vue (для dev) перезагружались,
-      # нужно монтировать и исходники, но для продакшена (собранные файлы) - только dist.
-      # В данном случае, для production-сборки, монтирование dist - самое верное.
+      - ./Frontend:/app
+      - /app/node_modules
+    environment:
+      # Если live-reload не срабатывает (особенно на Windows/macOS) — включите polling:
+      - CHOKIDAR_USEPOLLING=true
 
     depends_on:
       - backend

@@ -24,7 +24,7 @@ class TaskController(Controller):
 
         task_title = data.get('title')
         task_type = data.get('type')
-        quest_id = data.get('quest-id')
+        quest_id = data.get('quest_id')
         return TaskService.add_task(task_title, task_type, quest_id)
 
     @staticmethod

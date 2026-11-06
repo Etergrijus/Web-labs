@@ -1,3 +1,7 @@
+:root {
+  --my-scarlet: #ff2400;
+}
+
 *,
 *::before,
 *::after {
@@ -39,7 +43,6 @@ html, body {
   flex-direction: column;
   align-items: center;
   margin-right: 50px;
-
 }
 
 .task-buttons {
@@ -90,7 +93,7 @@ main .welcome-text {
   text-align: center;
   font-family: Silkscreen, serif;
 
-    /*Чтобы при зажатии кнопки и перемещении мыши ссылка не тянулась с нами */
+  /*Чтобы при зажатии кнопки и перемещении мыши ссылка не тянулась с нами */
   -webkit-user-drag: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -98,8 +101,8 @@ main .welcome-text {
 }
 
 .default-button:hover {
-  color: #ff2400;
-  border-color: #ff2400;
+  color: var(--my-scarlet);
+  border-color: var(--my-scarlet);
 }
 
 .task-header-text {
@@ -113,7 +116,7 @@ main .welcome-text {
   align-items: center;
   margin-top: 30px;
   margin-bottom: 30px;
-  justify-content: space-between
+  justify-content: center;
 }
 
 .in-row-margin {
@@ -137,8 +140,9 @@ main .welcome-text {
   background-repeat: no-repeat;
 }
 
+/*Вызывается, когда редактируем задачи*/
 label[contenteditable="true"] {
-  border: 1px solid darkgoldenrod;
+  border: 2px solid darkgoldenrod;
   border-radius: 15px;
   padding: 10px;
   outline: none;
@@ -146,13 +150,16 @@ label[contenteditable="true"] {
 
 input[type="number"] {
   height: 70px;
+  width: 75px;
+
+  color: var(--my-scarlet);
   border-radius: 15px;
-  border: 1px solid darkgoldenrod;
+  border: 2px solid darkgoldenrod;
   position: relative;
   text-align: center;
   font-size: 20px;
   font-family: Silkscreen, serif;
-  width: 70px;
+
   outline: none;
   background-image: url("data:image/svg+xml,%3Csvg version='1.1' viewBox='0 0 25 70' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke-width='2'%3E%3C!-- Горизонтальная линия --%3E%3Cline x1='0' x2='25' y1='35' y2='35' stroke='darkgoldenrod'/%3E%3C!-- Верхняя стрелка --%3E%3Cpolyline transform='translate(12.5 25) rotate(45) translate(-12.5 -15)' points='7.5 21.5 7.5 9.5 18.5 9.5' stroke='darkgoldenrod'/%3E%3C!-- Нижняя стрелка --%3E%3Cpolyline transform='translate(12.5 45) rotate(225) translate(-12.5 -40)' points='7.5 47.5 7.5 35.5 18.5 35.5' stroke='darkgoldenrod'/%3E%3C/g%3E%3C/svg%3E");
   background-position: center right;
@@ -164,13 +171,30 @@ input[type="number"] {
 
 input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none !important;
+  appearance: none !important;
   opacity: 1 !important;
   background: transparent !important;
   border-width: 0;
-  margin: 0;
+  margin: -2px;
   border-left: 1px solid darkgoldenrod;
   height: 70px;
   width: 24px;
+  cursor: pointer;
+}
+
+
+input[type="datetime-local"] {
+  color: var(--my-scarlet);
+  border-radius: 15px;
+  border: 2px solid darkgoldenrod !important;
+  text-align: center;
+  font-family: Silkscreen, serif;
+  font-size: 20px !important;
+
+  outline: none;
+}
+
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
 }
 

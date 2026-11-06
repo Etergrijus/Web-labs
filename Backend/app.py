@@ -47,14 +47,17 @@ def create_quest_endpoint():
     return QuestController.add_quest()
 
 
-@app.route('/quest/<int:quest_id>', methods=['GET', 'PATCH', 'DELETE'])
-def quest_rud_endpoint(quest_id):
+# ПЕРЕВЕСТИ ВЫПОЛНЕНИЕ КВЕСТА НА PUT, GET'ОМ ПОЛУЧАТЬ КВЕСТ
+@app.route('/quest/<int:quest_id>', methods=['GET', 'PATCH', 'PUT', 'DELETE'])
+def quest_actions_endpoint(quest_id):
     if request.method == 'DELETE':
         return QuestController.delete_quest(quest_id)
     elif request.method == 'PATCH':
         return QuestController.update_title_in_quest(quest_id)
-    elif request.method == 'GET':
+    elif request.method == 'PUT':
         return QuestController.complete_quest(quest_id)
+    elif request.method == 'GET':
+        return QuestController.get_quest_tasks(quest_id)
 
 
 @app.route('/task', methods=['POST'])

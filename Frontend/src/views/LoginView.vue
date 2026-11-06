@@ -52,11 +52,6 @@ const submitForm = async (event: Event) => {
     await nextTick()
     await updateTooltipPosition(passwordError.value, passwordInputRef.value, passwordSpanRef.value)
   }
-
-/*  if (!(loginError.value || passwordError.value)) {
-    await nextTick()
-    await router.push('/content');
-  }*/
 }
 
 const loginInputRef = ref<HTMLElement | null>(null);

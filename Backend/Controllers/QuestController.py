@@ -38,8 +38,17 @@ class QuestController(Controller):
         if error:
             return error
 
-        new_title = data.get('new-title')
+        new_title = data.get('new_title')
         return QuestService.update_quest(quest_id, new_title)
+
+    @staticmethod
+    def get_quest_tasks(quest_id):
+        # data = request.get_json()
+        # error = QuestController._validate(data)
+        # if error:
+        #     return error
+        #
+        return QuestService.get_tasks(quest_id)
 
     @staticmethod
     def complete_quest(quest_id):

@@ -2,6 +2,7 @@
 
 import SimpleImageButton from "../Design/SimpleImageButton.vue";
 import {ref} from "vue";
+import {editing} from "../../composables/tasksFunctions"
 
 const props = defineProps<{
   index: number,
@@ -11,35 +12,27 @@ const props = defineProps<{
 
 const emit = defineEmits(['remove'])
 
+const taskTitle = ref(props.title)
+const taskTitleEl = ref<HTMLElement | null> (null)
+
 const handleRemove = () => {
   emit('remove', props.index)
 }
 
-const editButtonText = ref("Редактировать")
-const taskTitle = ref(props.title)
-const isEdit = ref(false)
+const { editButtonText, toggleEdit } = editing()
 
-const editing = () => {
-  const titleLabel = document.getElementById('task_title' + props.id)
-  if (isEdit.value === false) {
-    editButtonText.value = "Сохранить"
-    isEdit.value = true
-    titleLabel.contentEditable = String(true);
-  }
-  else if (isEdit.value === true) {
-    editButtonText.value = "Редактировать"
-    isEdit.value = false
-    titleLabel.contentEditable = String(false);
-  }
+const handleEdit = () => {
+  toggleEdit(taskTitleEl.value)
 }
+
 </script>
 
 <template>
   <div class="row task-style">
-    <div class="column" style="width: 450px">
+    <div class="column" style="width: 700px">
       <label
         class="task-header-text"
-        :id="'task_title' + id"
+        ref="taskTitleEl"
       >
         {{taskTitle}}
       </label>
@@ -55,7 +48,7 @@ const editing = () => {
         :font_size="36"
         :image_width="250"
         :image_height="100"
-        @click="editing"
+        @click="handleEdit"
       ></SimpleImageButton>
 
       <SimpleImageButton

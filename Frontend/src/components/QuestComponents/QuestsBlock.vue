@@ -17,16 +17,14 @@ const props = defineProps<{
   indexAdjustment: number
 }>();
 
-const emit = defineEmits(['removeQuest', 'toggleList']);
-
-const handleRemove = (localIndex: number) => {
-  const correctIndex = localIndex + props.indexAdjustment
-  emit('removeQuest', correctIndex)
-}
+const emit = defineEmits(['removeQuest', 'toggleList', 'updateQuestTitle']);
 
 // Храним не флаг видимости списка, а ID квеста, для которого открыто окно
 const openDialogQuestId = ref<number | null>(null)
 const isDialogOpen = ref(false);
+
+const addingTask = ref("")
+const targetQuestId = ref(null)
 const openDialog = (questId: number) => {
   openDialogQuestId.value = questId
   isDialogOpen.value = true
@@ -42,8 +40,16 @@ const closeDialog = () => {
   isDialogOpen.value = false
 }
 
-const addingTask = ref("")
-const targetQuestId = ref(null)
+const handleRemove = (localIndex: number) => {
+  const correctIndex = localIndex + props.indexAdjustment
+  emit('removeQuest', correctIndex)
+}
+
+const handleTitleUpdating = (localIndex: number) => {
+  const correctIndex = localIndex + props.indexAdjustment
+  emit('updateQuestTitle', correctIndex)
+}
+
 const handleAddTask = (taskType: string, targetId: number) => {
   addingTask.value = taskType
   targetQuestId.value = targetId
@@ -68,8 +74,10 @@ const handleAddTask = (taskType: string, targetId: number) => {
     :quest="quest"
     :adding-task="addingTask"
     :target-id="targetQuestId"
-    @removeQuest="handleRemove(index)"
+    :index-adjustment="props.indexAdjustment"
     @on-open-dialog="openDialog"
+    @on-remove-quest="handleRemove(index)"
+    @on-update-title="handleTitleUpdating(index)"
   ></QuestsList>
 
   <TaskDialog v-if="openDialogQuestId"
