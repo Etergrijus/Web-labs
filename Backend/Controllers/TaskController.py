@@ -39,7 +39,7 @@ class TaskController(Controller):
             return error
 
         task_title = data.get('title')
-        task_data = data.get('task-data')
+        task_data = data.get('task_data')
         return TaskService.update_task(task_id, task_title, task_data)
 
     @staticmethod
@@ -49,5 +49,5 @@ class TaskController(Controller):
         if error:
             return error
 
-        task_data = data.get('task-data')
+        task_data = data.get('task_data')
         return TaskService.task_action(task_id, task_data)

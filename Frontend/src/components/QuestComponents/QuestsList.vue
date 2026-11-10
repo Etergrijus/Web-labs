@@ -81,57 +81,10 @@ const componentNamesMap = {
 
 watch(() => props.addingTask, async () => {
   if (props.targetId === props.quest.id) {
-    if (await addTask(props.addingTask) == true) {
-      console.log("isCorrect?")
+    if (await addTask(props.addingTask) == true)
       await fetchQuestTasks()
-    }
   }
 })
-
-/*const createTask = (taskType: string) => {
-  //Смешная херня, чтобы TypeScript не ругался
-  //Ужас-ужас, зато будет билдиться
-  let componentName: DefineComponent<any, any, any, any, any, any, any, any, any, any, any> | undefined;
-  let defaultTaskData: any;
-
-  //Чтобы регистры точно совпали
-  taskType = taskType[0].toUpperCase() + taskType.slice(1)
-  switch (taskType) {
-    case TaskTypes.SIMPLE:
-      componentName = componentNamesMap[TaskTypes.SIMPLE]
-      break;
-    case TaskTypes.CYCLE:
-      componentName = componentNamesMap[TaskTypes.CYCLE];
-      defaultTaskData = {needful_count: 1, done_count: 0};
-      break;
-    case TaskTypes.DEADLINE:
-      componentName = componentNamesMap[TaskTypes.DEADLINE]
-      const date = new Date(2030, 0, 1, 0, 0)
-      defaultTaskData = {deadline_date: date.toJSON()}
-      break;
-    case TaskTypes.MONOTONOUS:
-      componentName = componentNamesMap[TaskTypes.MONOTONOUS]
-      defaultTaskData = {
-        needful_count: 3,
-        done_count: 0,
-        period_value: 1,
-        period_measure_unit: "day"
-      };
-      break;
-  }
-
-  const newTask = {
-    id: nextId++,
-    quest_id: props.quest.id,
-    type: taskType,
-    title: 'Что-то эпическое',
-    status: false,
-    component: componentName,
-    task_data: defaultTaskData
-  }
-
-  questTasks.value.push(newTask)
-}*/
 
 function taskExceptionHandle(error: any, action: string) {
   if (error.response) {

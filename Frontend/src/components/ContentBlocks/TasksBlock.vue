@@ -87,7 +87,6 @@ const quests = computed(() => {
 })
 
 const mainQuests = computed<Quest[]>(() => {
-  console.log(quests)
   return quests.value.filter(quest => quest.type === QuestTypes.MAIN);
 });
 const sideQuests = computed<Quest[]>(() => {

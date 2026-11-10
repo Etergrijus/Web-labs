@@ -3,7 +3,7 @@ from flask_cors import CORS
 
 from Controllers.QuestController import QuestController
 from Controllers.AuthController import AuthController
-from Controllers.ContentController import ContentController
+from Controllers.CharacterController import ContentController
 from Controllers.TaskController import TaskController
 from Controllers.ArchiveController import ArchiveController
 from config import config

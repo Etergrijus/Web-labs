@@ -8,6 +8,36 @@ except ImportError as e:
 
 class TaskRepository:
     @staticmethod
+    def create_task(task_title, task_type, quest_id):
+        task = Task.create(
+            title=task_title,
+            type=task_type,
+            quest=quest_id
+        )
+        return task
+
+    @staticmethod
+    def create_cycle_task(task_id):
+        return CycleTask.create(task=task_id)
+
+    @staticmethod
+    def create_deadline_task(task_id):
+        return DeadlineTask.create(task=task_id)
+
+    @staticmethod
+    def create_monotonous_task(task_id):
+        return MonotonousTask.create(task=task_id)
+
+    @staticmethod
+    def delete_task(task_id):
+        task = Task.get(task_id)
+        task.delete_instance()
+
+    @staticmethod
+    def get_task(task_id):
+        return Task.get(task_id)
+
+    @staticmethod
     def get_quest_tasks(quest_id):
         query = (
             Task
@@ -45,36 +75,6 @@ class TaskRepository:
         return query.dicts()
 
     @staticmethod
-    def create_task(task_title, task_type, quest_id):
-        task = Task.create(
-            title=task_title,
-            type=task_type,
-            quest=quest_id
-        )
-        return task
-
-    @staticmethod
-    def create_cycle_task(task_id):
-        return CycleTask.create(task=task_id)
-
-    @staticmethod
-    def create_deadline_task(task_id):
-        return DeadlineTask.create(task=task_id)
-
-    @staticmethod
-    def create_monotonous_task(task_id):
-        return MonotonousTask.create(task=task_id)
-
-    @staticmethod
-    def delete_task(task_id):
-        task = Task.get(task_id)
-        task.delete_instance()
-
-    @staticmethod
-    def get_task(task_id):
-        return Task.get(task_id)
-
-    @staticmethod
     def get_cycle_task(task_id):
         return CycleTask.select().where(CycleTask.task == task_id).first()
 
@@ -86,7 +86,7 @@ class TaskRepository:
     @staticmethod
     def set_new_task_data(task_id, fields, task_type):
         query = None
-        # Порядок аналогичен описанному в моделях
+        # Порядок полей аналогичен описанному в моделях
         if task_type == TaskType.CYCLE.value:
             query = (CycleTask.update({
                 CycleTask.needful_count: fields[0]

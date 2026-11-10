@@ -1,7 +1,7 @@
 try:
-    from Backend.Services.ContentService import *
+    from Backend.Services.CharacterService import *
 except ImportError as e:
-    from Services.ContentService import *
+    from Services.CharacterService import *
 
 from flask import session, jsonify
 

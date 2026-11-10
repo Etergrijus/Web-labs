@@ -44,12 +44,12 @@ class QuestService:
                     'status': quest.status,
                     'char_id': quest.character_id
                 }), 201
-        except IntegrityError as e:
+        except IntegrityError:
             return jsonify({'error': 'foreign-key failed, incorrect character id'}), 409
-        except DataError as e:
+        except DataError:
             return jsonify({'error': 'Unexpected quest type'}), 400
         except Exception as e:
-            return jsonify({'error': 'Internal server error'}), 500
+            return jsonify({'error': f'Internal server error\n{str(e)}'}), 500
 
     @staticmethod
     def delete_quest(quest_id):
@@ -60,7 +60,7 @@ class QuestService:
         except Quest.DoesNotExist:
             return jsonify({'error': 'Quest not found'}), 404
         except Exception as e:
-            return jsonify({'error': 'Internal server error'}), 500
+            return jsonify({'error': f'Internal server error\n{str(e)}'}), 500
 
     @staticmethod
     def update_quest(quest_id, new_title):
@@ -74,41 +74,44 @@ class QuestService:
                     'message': 'quest updates successfully',
                     'title': f'{QuestRepository.get_quest(quest_id).title}'
                 }), 200
-        except IntegrityError as e:
+        except IntegrityError:
             return jsonify({'error': 'Null value is unacceptable'}), 409
-        except Exception as exp:
-            return jsonify({'error': 'Internal server error'}), 500
-
-    @staticmethod
-    def remove_quest(quest_id):
-        try:
-            quest = QuestRepository.get_quest(quest_id)
-            if quest.status != QuestStatus.IN_PROGRESS.value:
-                try:
-                    with db.get_database().atomic():
-                        title = quest.title
-                        character_id = quest.character_id
-                        quest_type = quest.type
-                        QuestRepository.delete_quest(quest_id)
-                        QuestService._randomize_attribute(quest_type, character_id)
-                        archive_notice = ArchiveRepository.create_archive_notice(title, character_id)
-
-                        return jsonify({
-                            'message': 'removing to archive',
-                            'archive-id': archive_notice.id,
-                            'datetime': archive_notice.completion_time
-                        })
-                except Exception as e:
-                    return jsonify({'error': f'Error on removing quest {str(e)}'}), 400
-            else:
-                return jsonify({'error': 'Quest is still active'}), 405
         except Quest.DoesNotExist:
             return jsonify({'error': 'Quest not found'}), 404
         except Exception as e:
-            return jsonify({'error': f'Internal server error {str(e)}'}), 500
+            return jsonify({'error': f'Internal server error\n{str(e)}'}), 500
 
     @staticmethod
-    def get_tasks(quest_id):
+    def finish_quest(quest_id):
+        try:
+            quest = QuestRepository.get_quest(quest_id)
+        except Quest.DoesNotExist:
+            return jsonify({'error': 'Quest not found'}), 404
+        except Exception as e:
+            return jsonify({'error': f'Internal server error\n{str(e)}'}), 500
+
+        if quest.status != QuestStatus.IN_PROGRESS.value:
+            try:
+                with db.get_database().atomic():
+                    title = quest.title
+                    character_id = quest.character_id
+                    quest_type = quest.type
+                    QuestRepository.delete_quest(quest_id)
+                    QuestService._randomize_attribute(quest_type, character_id)
+                    archive_notice = ArchiveRepository.create_archive_notice(title, character_id)
+
+                    return jsonify({
+                        'message': 'removing to archive',
+                        'archive-id': archive_notice.id,
+                        'datetime': archive_notice.completion_time
+                    })
+            except Exception as e:
+                return jsonify({'error': f'Unexpected error on removing quest\n{str(e)}'}), 400
+        else:
+            return jsonify({'error': 'Quest is still active'}), 422
+
+    @staticmethod
+    def get_tasks_of_quest(quest_id):
         quest_tasks = {
             'tasks': []
         }

@@ -48,8 +48,8 @@ class QuestController(Controller):
         # if error:
         #     return error
         #
-        return QuestService.get_tasks(quest_id)
+        return QuestService.get_tasks_of_quest(quest_id)
 
     @staticmethod
     def complete_quest(quest_id):
-        return QuestService.remove_quest(quest_id)
+        return QuestService.finish_quest(quest_id)
